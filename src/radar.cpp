@@ -12,8 +12,21 @@
 #include "3rdparty/ComLib_C_Interface/include/Protocol.h"
 
 #include <QDebug>
+#include <QThread>
 
 constexpr int STATE_RADAR_DISCONNECTED = -1;
+
+void received_frame_data(void* context,
+                        int32_t protocol_handle,
+                        uint8_t endpoint,
+                        const Frame_Info_t* frame_info)
+{
+    // Print the sampled data which can be found in frame_info->sample_data
+    for (uint32_t i = 0; i < frame_info->num_samples_per_chirp; i++)
+    {
+        printf("ADC sample %d: %f\n", i, frame_info->sample_data[i]);
+    }
+}
 
 Radar::Radar(QObject *parent) : QObject(parent)
 {
@@ -154,6 +167,14 @@ bool Radar::DisableAutomaticFrameTrigger(const EndpointType &endpoint)
 
     PrintStatusCodeInformation(res);
     return true;
+}
+
+void Radar::DoMeasurement()
+{
+    while(true)
+    {
+        qDebug() << QThread::currentThreadId();
+    }
 }
 
 void Radar::PrintSerialPortInformation(const QSerialPortInfo &info)

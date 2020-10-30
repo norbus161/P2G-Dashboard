@@ -22,6 +22,9 @@ public:
     bool EnableAutomaticFrameTrigger(EndpointType const & endpoint, size_t interval_us);
     bool DisableAutomaticFrameTrigger(EndpointType const & endpoint);
 
+public slots:
+    void DoMeasurement();
+
 private:
     void PrintSerialPortInformation(QSerialPortInfo const & info);
     void PrintFirmwareInformation();

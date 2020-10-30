@@ -96,7 +96,6 @@ void MainWindow::InitializePolarPlot()
     chart->addSeries(series4);
     chart->addSeries(series5);
 
-    //![2]
     QValueAxis *angularAxis = new QValueAxis();
     angularAxis->setTickCount(9); // First and last ticks are co-located on 0/360 angle.
     angularAxis->setLabelFormat("%.1f");
