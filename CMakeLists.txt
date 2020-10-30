@@ -16,6 +16,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 add_subdirectory(3rdparty)
 find_package(Qt5SerialPort REQUIRED)
+find_package(Qt5Charts REQUIRED)
 
   add_executable(P2G-Gui
     src/main.cpp
@@ -30,5 +31,6 @@ find_package(Qt5SerialPort REQUIRED)
 target_link_libraries(P2G-Gui PUBLIC
     p2g
     Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::SerialPort)
+    Qt${QT_VERSION_MAJOR}::SerialPort
+    Qt${QT_VERSION_MAJOR}::Charts)
 

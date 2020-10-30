@@ -4,5 +4,6 @@ Qt Desktop GUI application to visualize some radar informations.
 
 ## Dependencies
 
-* `Qt 5.15.1`
 * `CMake 3.5`
+* `Qt 5.15.1`
+  * `QtCharts`
