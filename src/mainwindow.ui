@@ -18,7 +18,7 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QChartView" name="range_spectrum"/>
+       <widget class="QChartView" name="time_domain"/>
       </item>
       <item>
        <widget class="QChartView" name="polar_plot"/>

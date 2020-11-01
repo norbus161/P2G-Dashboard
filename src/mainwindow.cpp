@@ -1,13 +1,11 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    InitializeRangeSpectrum();
-    InitializePolarPlot();
+    initializeTimeDomain();
+    initializePolarPlot();
 }
 
 MainWindow::~MainWindow()
@@ -15,117 +13,104 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::InitializeRangeSpectrum()
+void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QLineSeries *series = new QLineSeries();
-
-    series->append(0, 6);
-    series->append(2, 4);
-    series->append(3, 8);
-    series->append(7, 4);
-    series->append(10, 5);
-    *series << QPointF(11, 1) << QPointF(13, 3) << QPointF(17, 6) << QPointF(18, 3) << QPointF(20, 2);
-
-    QChart *chart = new QChart();
-    chart->legend()->hide();
-    chart->addSeries(series);
-    chart->createDefaultAxes();
-    chart->setTitle("Radar range spectrum");
-
-    ui->range_spectrum->setChart(chart);
-    ui->range_spectrum->setRenderHint(QPainter::Antialiasing);
-    ui->range_spectrum->show();
+    emit closed();
+    event->accept();
 }
 
-void MainWindow::InitializePolarPlot()
+void MainWindow::initializeTimeDomain()
 {
-    const qreal angularMin = -100;
-    const qreal angularMax = 100;
+    m_time_series_re_rx1 = new QLineSeries();
+    m_time_series_im_rx1 = new QLineSeries();
+    m_time_series_re_rx1->setName("Inphase component antenna 1");
+    m_time_series_im_rx1->setName("Quadratur component antenna 1");
 
-    const qreal radialMin = -100;
-    const qreal radialMax = 100;
+    m_time_series_re_rx2 = new QLineSeries();
+    m_time_series_im_rx2 = new QLineSeries();
+    m_time_series_re_rx2->setName("Inphase component antenna 2");
+    m_time_series_im_rx2->setName("Quadratur component antenna 2");
 
-    QScatterSeries *series1 = new QScatterSeries();
-    series1->setName("scatter");
-    for (int i = angularMin; i <= angularMax; i += 10)
-        series1->append(i, (i / radialMax) * radialMax + 8.0);
+    QChart *chart = new QChart();
+    chart->addSeries(m_time_series_re_rx1);
+    chart->addSeries(m_time_series_im_rx1);
+    chart->addSeries(m_time_series_re_rx2);
+    chart->addSeries(m_time_series_im_rx2);
 
-    QSplineSeries *series2 = new QSplineSeries();
-    series2->setName("spline");
-    for (int i = angularMin; i <= angularMax; i += 10)
-        series2->append(i, (i / radialMax) * radialMax);
+    chart->createDefaultAxes();
+    chart->setTitle("Time domain");
+    chart->axes(Qt::Horizontal).back()->setRange(0, 63);
+    chart->axes(Qt::Vertical).back()->setRange(0, 1.2);
+    chart->setTheme(QChart::ChartThemeBlueCerulean);
 
-    QLineSeries *series3 = new QLineSeries();
-    series3->setName("star outer");
-    qreal ad = (angularMax - angularMin) / 8;
-    qreal rd = (radialMax - radialMin) / 3 * 1.3;
-    series3->append(angularMin, radialMax);
-    series3->append(angularMin + ad*1, radialMin + rd);
-    series3->append(angularMin + ad*2, radialMax);
-    series3->append(angularMin + ad*3, radialMin + rd);
-    series3->append(angularMin + ad*4, radialMax);
-    series3->append(angularMin + ad*5, radialMin + rd);
-    series3->append(angularMin + ad*6, radialMax);
-    series3->append(angularMin + ad*7, radialMin + rd);
-    series3->append(angularMin + ad*8, radialMax);
+    ui->time_domain->setChart(chart);
+    ui->time_domain->setRenderHint(QPainter::Antialiasing);
+    ui->time_domain->show();
+}
 
-    QLineSeries *series4 = new QLineSeries();
-    series4->setName("star inner");
-    ad = (angularMax - angularMin) / 8;
-    rd = (radialMax - radialMin) / 3;
-    series4->append(angularMin, radialMax);
-    series4->append(angularMin + ad*1, radialMin + rd);
-    series4->append(angularMin + ad*2, radialMax);
-    series4->append(angularMin + ad*3, radialMin + rd);
-    series4->append(angularMin + ad*4, radialMax);
-    series4->append(angularMin + ad*5, radialMin + rd);
-    series4->append(angularMin + ad*6, radialMax);
-    series4->append(angularMin + ad*7, radialMin + rd);
-    series4->append(angularMin + ad*8, radialMax);
+void MainWindow::initializePolarPlot()
+{
+    const qreal angularMin = -180;
+    const qreal angularMax = 180;
 
-    QAreaSeries *series5 = new QAreaSeries();
-    series5->setName("star area");
-    series5->setUpperSeries(series3);
-    series5->setLowerSeries(series4);
-    series5->setOpacity(0.5);
+    const qreal radialMin = 0;
+    const qreal radialMax = 10;
+
+    m_polar_plot_series = new QScatterSeries();
+    m_polar_plot_series->setName("Detected targets");
 
     QPolarChart *chart = new QPolarChart();
-    chart->addSeries(series1);
-    chart->addSeries(series2);
-    chart->addSeries(series3);
-    chart->addSeries(series4);
-    chart->addSeries(series5);
+    chart->addSeries(m_polar_plot_series);
 
     QValueAxis *angularAxis = new QValueAxis();
     angularAxis->setTickCount(9); // First and last ticks are co-located on 0/360 angle.
-    angularAxis->setLabelFormat("%.1f");
+    angularAxis->setLabelFormat("%d");
     angularAxis->setShadesVisible(true);
     angularAxis->setShadesBrush(QBrush(QColor(249, 249, 255)));
     chart->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
 
     QValueAxis *radialAxis = new QValueAxis();
-    radialAxis->setTickCount(9);
-    radialAxis->setLabelFormat("%d");
+    radialAxis->setTickCount(6);
+    radialAxis->setLabelFormat("%d [m]");
     chart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
 
-    series1->attachAxis(radialAxis);
-    series1->attachAxis(angularAxis);
-    series2->attachAxis(radialAxis);
-    series2->attachAxis(angularAxis);
-    series3->attachAxis(radialAxis);
-    series3->attachAxis(angularAxis);
-    series4->attachAxis(radialAxis);
-    series4->attachAxis(angularAxis);
-    series5->attachAxis(radialAxis);
-    series5->attachAxis(angularAxis);
+    m_polar_plot_series->attachAxis(radialAxis);
+    m_polar_plot_series->attachAxis(angularAxis);
 
     radialAxis->setRange(radialMin, radialMax);
     angularAxis->setRange(angularMin, angularMax);
+    angularAxis->setTickAnchor(angularMax);
 
     chart->setTitle("Polar plot of targets");
+    chart->setTheme(QChart::ChartThemeBlueCerulean);
 
     ui->polar_plot->setChart(chart);
     ui->polar_plot->setRenderHint(QPainter::Antialiasing);
     ui->polar_plot->show();
+}
+
+void MainWindow::updateFrameData(QList<QPointF> const & re_rx1, QList<QPointF> const & im_rx1,
+                                 QList<QPointF> const & re_rx2, QList<QPointF> const & im_rx2)
+{
+    m_time_series_re_rx1->clear();
+    m_time_series_im_rx1->clear();
+    m_time_series_re_rx2->clear();
+    m_time_series_im_rx2->clear();
+
+    m_time_series_re_rx1->append(re_rx1);
+    m_time_series_im_rx1->append(im_rx1);
+    m_time_series_re_rx2->append(re_rx2);
+    m_time_series_im_rx2->append(im_rx2);
+}
+
+void MainWindow::updateTargetData(const QVector<Target_Info_t> &data)
+{
+    m_polar_plot_series->clear();
+
+    for (auto & e: data)
+    {
+        //qDebug() << e.radius/100 << " : " << e.azimuth;
+        m_polar_plot_series->append(e.radius/100, e.azimuth);
+    }
 }
 

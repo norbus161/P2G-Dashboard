@@ -1,42 +1,38 @@
 #include "radar.h"
-#include "3rdparty/ComLib_C_Interface/include/COMPort.h"
-#include "3rdparty/ComLib_C_Interface/include/EndpointCalibration.h"
-#include "3rdparty/ComLib_C_Interface/include/EndpointRadarAdcxmc.h"
-#include "3rdparty/ComLib_C_Interface/include/EndpointRadarBase.h"
-#include "3rdparty/ComLib_C_Interface/include/EndpointRadarDoppler.h"
-#include "3rdparty/ComLib_C_Interface/include/EndpointRadarErrorCodes.h"
-#include "3rdparty/ComLib_C_Interface/include/EndpointRadarFmcw.h"
-#include "3rdparty/ComLib_C_Interface/include/EndpointRadarIndustrial.h"
-#include "3rdparty/ComLib_C_Interface/include/EndpointRadarP2G.h"
-#include "3rdparty/ComLib_C_Interface/include/EndpointTargetDetection.h"
-#include "3rdparty/ComLib_C_Interface/include/Protocol.h"
+
+#include <COMPort.h>
+#include <EndpointCalibration.h>
+#include <EndpointRadarAdcxmc.h>
+#include <EndpointRadarBase.h>
+#include <EndpointRadarDoppler.h>
+#include <EndpointRadarErrorCodes.h>
+#include <EndpointRadarFmcw.h>
+#include <EndpointRadarIndustrial.h>
+#include <EndpointRadarP2G.h>
+#include <Protocol.h>
 
 #include <QDebug>
+#include <QPointF>
 #include <QThread>
 
+// Constants
 constexpr int STATE_RADAR_DISCONNECTED = -1;
 
-void received_frame_data(void* context,
-                        int32_t protocol_handle,
-                        uint8_t endpoint,
-                        const Frame_Info_t* frame_info)
-{
-    // Print the sampled data which can be found in frame_info->sample_data
-    for (uint32_t i = 0; i < frame_info->num_samples_per_chirp; i++)
-    {
-        printf("ADC sample %d: %f\n", i, frame_info->sample_data[i]);
-    }
-}
+// Callbacks
+void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const Frame_Info_t* frame_info);
+void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const  Target_Info_t* frame_info, uint8_t num_targets);
+
 
 Radar::Radar(QObject *parent) : QObject(parent)
 {
     m_handle = STATE_RADAR_DISCONNECTED;
+    m_shutdown = false;
 }
 
 Radar::~Radar()
 {}
 
-bool Radar::Connect()
+bool Radar::connect()
 {
     qDebug() << "Trying to connect to radar...";
     qDebug() << "Checking serial ports...";
@@ -49,8 +45,8 @@ bool Radar::Connect()
         if (m_handle >= 0)
         {
             qDebug() << "Device found...";
-            PrintSerialPortInformation(info);
-            PrintFirmwareInformation();
+            printSerialPortInformation(info);
+            printFirmwareInformation();
             return true;
         }
     }
@@ -60,15 +56,18 @@ bool Radar::Connect()
     return false;
 }
 
-void Radar::Disconnect()
+void Radar::disconnect()
 {
+    if (!m_shutdown)
+        stopMeasurement();
+
     if (m_handle >= 0)
-    {
         protocol_disconnect(m_handle);
-    }
+
+    qDebug() << "Device succesfully disconnected...";
 }
 
-bool Radar::AddEndpoint(const EndpointType &endpoint)
+bool Radar::addEndpoint(const EndpointType &endpoint)
 {
     auto const nr_of_endpoints = protocol_get_num_endpoints(m_handle);
 
@@ -145,39 +144,40 @@ bool Radar::AddEndpoint(const EndpointType &endpoint)
     return false;
 }
 
-bool Radar::EnableAutomaticFrameTrigger(const EndpointType &endpoint, size_t interval_us)
+bool Radar::setAutomaticFrameTrigger(bool enable, const EndpointType &endpoint, size_t interval_us)
 {
     int res = 0;
-    if ((res = ep_radar_base_set_automatic_frame_trigger(m_handle, m_endpoints[endpoint], interval_us)) < 0)
-    {
-        return false;
-    }
 
-    PrintStatusCodeInformation(res);
+    if (enable)
+        res = ep_radar_base_set_automatic_frame_trigger(m_handle, m_endpoints[endpoint], interval_us);
+    else
+        res = ep_radar_base_set_automatic_frame_trigger(m_handle, m_endpoints[endpoint], 0);
+
+    if (res < 0)
+        return false;
+
     return true;
 }
 
-bool Radar::DisableAutomaticFrameTrigger(const EndpointType &endpoint)
+void Radar::doMeasurement()
 {
-    int res = 0;
-    if ((res = ep_radar_base_set_automatic_frame_trigger(m_handle, m_endpoints[endpoint], 0)) < 0)
-    {
-        return false;
-    }
+    m_shutdown = false;
+    ep_radar_base_set_callback_data_frame(CbReceivedFrameData, this);
+    ep_targetdetect_set_callback_target_processing(CbReceivedTargetData, this);
 
-    PrintStatusCodeInformation(res);
-    return true;
-}
-
-void Radar::DoMeasurement()
-{
-    while(true)
+    while(!m_shutdown)
     {
-        qDebug() << QThread::currentThreadId();
+        ep_radar_base_get_frame_data(m_handle, m_endpoints[EndpointType::Base], 1);
+        ep_targetdetect_get_targets(m_handle, m_endpoints[EndpointType::TargetDetection]);
     }
 }
 
-void Radar::PrintSerialPortInformation(const QSerialPortInfo &info)
+void Radar::stopMeasurement()
+{
+    m_shutdown = true;
+}
+
+void Radar::printSerialPortInformation(const QSerialPortInfo &info)
 {
     QString s = QObject::tr("Port: ") + info.portName() + "\n"
                 + QObject::tr("Location: ") + info.systemLocation() + "\n"
@@ -190,7 +190,7 @@ void Radar::PrintSerialPortInformation(const QSerialPortInfo &info)
     qDebug().noquote()  << s;
 }
 
-void Radar::PrintFirmwareInformation()
+void Radar::printFirmwareInformation()
 {
     Firmware_Information_t info;
     protocol_get_firmware_information(m_handle, &info);
@@ -201,7 +201,47 @@ void Radar::PrintFirmwareInformation()
     qDebug().noquote()  << s;
 }
 
-void Radar::PrintStatusCodeInformation(int code)
+void Radar::printStatusCodeInformation(int code)
 {
     qDebug() << "Status: " << protocol_get_status_code_description(m_handle, code);
+}
+
+void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const Frame_Info_t* frame_info)
+{
+    QList<QPointF> re_rx1, im_rx1, re_rx2, im_rx2;
+
+    for (uint32_t i = 0; i < 4 * frame_info->num_samples_per_chirp; i++)
+    {
+        if (i < frame_info->num_samples_per_chirp)
+        {
+            QPointF p(i, frame_info->sample_data[i]);
+            re_rx1.push_back(p);
+        }
+        else if(i < 2 * frame_info->num_samples_per_chirp)
+        {
+            QPointF p(i % frame_info->num_samples_per_chirp, frame_info->sample_data[i]);
+            im_rx1.push_back(p);
+        }
+        else if(i < 3 * frame_info->num_samples_per_chirp)
+        {
+            QPointF p(i % (2 * frame_info->num_samples_per_chirp), frame_info->sample_data[i]);
+            re_rx2.push_back(p);
+        }
+        else
+        {
+            QPointF p(i % (3 * frame_info->num_samples_per_chirp), frame_info->sample_data[i]);
+            im_rx2.push_back(p);
+        }
+    }
+    emit ((Radar*)context)->frameDataChanged(re_rx1, im_rx1, re_rx2, im_rx2);
+}
+
+void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const  Target_Info_t* frame_info, uint8_t num_targets)
+{
+    QVector<Target_Info_t> vec;
+
+    vec.reserve(num_targets);
+    std::copy(frame_info, frame_info + num_targets, std::back_inserter(vec));
+
+    emit ((Radar*)context)->targetDataChanged(vec);
 }

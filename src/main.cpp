@@ -10,23 +10,31 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
 
-    // Instantiate radar object and configure it
+    // Instantiate radar object and and try to connect to it
     Radar r;
-    qDebug() << "Connecting: " << r.Connect();
-    qDebug() << "Setting endpoint: " << r.AddEndpoint(EndpointType::Base);
-    qDebug() << "Enable frame trigger: " << r.EnableAutomaticFrameTrigger(EndpointType::Base, 1000000);
+    while (!r.connect())
+        QThread::msleep(250);
+
+    // Add the necassery endpoints
+    qDebug() << "Adding base endpoint: " << r.addEndpoint(EndpointType::Base);
+    qDebug() << "Adding target detection endpoint: " << r.addEndpoint(EndpointType::TargetDetection);
 
     // Move the radar object into another thread, so the gui thread won't block
     QThread* t = new QThread();
     r.moveToThread(t);
 
-    // Connections
-    QObject::connect(t, SIGNAL(started()), &r, SLOT(DoMeasurement()));
+    // Signal slot connections
+    qRegisterMetaType<QList<QPointF>>("QList<QPointF>");
+    qRegisterMetaType<QVector<Target_Info_t>>("QVector<Target_Info_t>");
+    QObject::connect(&r, &Radar::frameDataChanged, &w, &MainWindow::updateFrameData, Qt::AutoConnection);
+    QObject::connect(&r, &Radar::targetDataChanged, &w, &MainWindow::updateTargetData, Qt::AutoConnection);
+    QObject::connect(t, &QThread::started, &r, &Radar::doMeasurement, Qt::AutoConnection);
+    QObject::connect(&w, &MainWindow::closed, &r, &Radar::disconnect, Qt::DirectConnection);
 
     // Start the thread
     t->start();
 
-    // Gui thread continues...
+    // Gui thread execution continues...
     w.show();
     return a.exec();
 }
