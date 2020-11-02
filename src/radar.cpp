@@ -232,6 +232,7 @@ void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const 
             im_rx2.push_back(p);
         }
     }
+
     emit ((Radar*)context)->timeDataChanged(re_rx1, im_rx1, re_rx2, im_rx2);
     emit ((Radar*)context)->rangeDataChanged(re_rx1);
 }

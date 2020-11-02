@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
+#include <QFont>
+
+const size_t CHART_TITLE_FONT_SIZE = 20;
+
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -33,6 +37,7 @@ void MainWindow::initializeTimeDataPlot()
     m_time_data_series_im_rx2->setName("Quadratur component antenna 2");
 
     QChart *chart = new QChart();
+    chart->setTheme(QChart::ChartThemeBlueCerulean);
     chart->addSeries(m_time_data_series_re_rx1);
     chart->addSeries(m_time_data_series_im_rx1);
     chart->addSeries(m_time_data_series_re_rx2);
@@ -42,7 +47,12 @@ void MainWindow::initializeTimeDataPlot()
     chart->createDefaultAxes();
     chart->axes(Qt::Horizontal).back()->setRange(0, 63);
     chart->axes(Qt::Vertical).back()->setRange(0, 1.2);
-    chart->setTheme(QChart::ChartThemeBlueCerulean);
+    chart->axes(Qt::Horizontal).back()->setTitleText("Samples");
+    chart->axes(Qt::Vertical).back()->setTitleText("Amplitude");
+
+    QFont font;
+    font.setPixelSize(CHART_TITLE_FONT_SIZE);
+    chart->setTitleFont(font);
 
     ui->time_data->setChart(chart);
     ui->time_data->setRenderHint(QPainter::Antialiasing);
@@ -53,16 +63,22 @@ void MainWindow::initializeRangeDataPlot()
 {
     m_range_data_series_upper = new QLineSeries();
     m_range_data_series = new QAreaSeries(m_range_data_series_upper);
-    m_range_data_series->setName("Spectrum");
+    m_range_data_series->setName("Antenna 1");
 
     QChart *chart = new QChart();
+    chart->setTheme(QChart::ChartThemeBlueCerulean);
     chart->addSeries(m_range_data_series);
 
     chart->setTitle("Range spectrum");
     chart->createDefaultAxes();
     chart->axes(Qt::Horizontal).back()->setRange(0, 63);
     chart->axes(Qt::Vertical).back()->setRange(0, 1.2);
-    chart->setTheme(QChart::ChartThemeBlueCerulean);
+    chart->axes(Qt::Horizontal).back()->setTitleText("Range [m]");
+    chart->axes(Qt::Vertical).back()->setTitleText("Magnitude");
+
+    QFont font;
+    font.setPixelSize(CHART_TITLE_FONT_SIZE);
+    chart->setTitleFont(font);
 
     ui->range_data->setChart(chart);
     ui->range_data->setRenderHint(QPainter::Antialiasing);
@@ -103,6 +119,10 @@ void MainWindow::initializeTargetDataPlot()
     radialAxis->setRange(radialMin, radialMax);
     angularAxis->setRange(angularMin, angularMax);
     angularAxis->setTickAnchor(angularMax);
+
+    QFont font;
+    font.setPixelSize(CHART_TITLE_FONT_SIZE);
+    chart->setTitleFont(font);
 
     ui->target_data->setChart(chart);
     ui->target_data->setRenderHint(QPainter::Antialiasing);
