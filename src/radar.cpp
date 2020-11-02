@@ -35,7 +35,6 @@ Radar::~Radar()
 bool Radar::connect()
 {
     qDebug() << "Trying to connect to radar...";
-    qDebug() << "Checking serial ports...";
 
     const auto infos = QSerialPortInfo::availablePorts();
     for (const QSerialPortInfo &info : infos)
@@ -76,67 +75,67 @@ bool Radar::addEndpoint(const EndpointType &endpoint)
         switch(endpoint)
         {
             case EndpointType::Calibration:
-            if (ep_calibration_is_compatible_endpoint(m_handle, i) == 0)
-            {
-                m_endpoints.insert(endpoint, i);
-                return true;
-            }
+                if (ep_calibration_is_compatible_endpoint(m_handle, i) == 0)
+                {
+                    m_endpoints.insert(endpoint, i);
+                    return true;
+                }
             break;
 
             case EndpointType::AdcXmc:
-            if (ep_radar_adcxmc_is_compatible_endpoint(m_handle, i) == 0)
-            {
-                m_endpoints.insert(endpoint, i);
-                return true;
-            }
+                if (ep_radar_adcxmc_is_compatible_endpoint(m_handle, i) == 0)
+                {
+                    m_endpoints.insert(endpoint, i);
+                    return true;
+                }
             break;
 
             case EndpointType::Base:
-            if (ep_radar_base_is_compatible_endpoint(m_handle, i) == 0)
-            {
-                m_endpoints.insert(endpoint, i);
-                return true;
-            }
+                if (ep_radar_base_is_compatible_endpoint(m_handle, i) == 0)
+                {
+                    m_endpoints.insert(endpoint, i);
+                    return true;
+                }
             break;
 
             case EndpointType::Doppler:
-            if (ep_radar_doppler_is_compatible_endpoint(m_handle, i) == 0)
-            {
-                m_endpoints.insert(endpoint, i);
-                return true;
-            }
+                if (ep_radar_doppler_is_compatible_endpoint(m_handle, i) == 0)
+                {
+                    m_endpoints.insert(endpoint, i);
+                    return true;
+                }
             break;
 
             case EndpointType::Fmcw:
-            if (ep_radar_fmcw_is_compatible_endpoint(m_handle, i) == 0)
-            {
-                m_endpoints.insert(endpoint, i);
-                return true;
-            }
+                if (ep_radar_fmcw_is_compatible_endpoint(m_handle, i) == 0)
+                {
+                    m_endpoints.insert(endpoint, i);
+                    return true;
+                }
             break;
 
             case EndpointType::Industrial:
-            if (ep_radar_industrial_is_compatible_endpoint(m_handle, i) == 0)
-            {
-                m_endpoints.insert(endpoint, i);
-                return true;
-            }
+                if (ep_radar_industrial_is_compatible_endpoint(m_handle, i) == 0)
+                {
+                    m_endpoints.insert(endpoint, i);
+                    return true;
+                }
             break;
 
             case EndpointType::P2G:
-            if (ep_radar_p2g_is_compatible_endpoint(m_handle, i) == 0)
-            {
-                m_endpoints.insert(endpoint, i);
-                return true;
-            }
+                if (ep_radar_p2g_is_compatible_endpoint(m_handle, i) == 0)
+                {
+                    m_endpoints.insert(endpoint, i);
+                    return true;
+                }
             break;
 
             case EndpointType::TargetDetection:
-            if (ep_targetdetect_is_compatible_endpoint(m_handle, i) == 0)
-            {
-                m_endpoints.insert(endpoint, i);
-                return true;
-            }
+                if (ep_targetdetect_is_compatible_endpoint(m_handle, i) == 0)
+                {
+                    m_endpoints.insert(endpoint, i);
+                    return true;
+                }
             break;
         }
     }
@@ -233,7 +232,8 @@ void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const 
             im_rx2.push_back(p);
         }
     }
-    emit ((Radar*)context)->frameDataChanged(re_rx1, im_rx1, re_rx2, im_rx2);
+    emit ((Radar*)context)->timeDataChanged(re_rx1, im_rx1, re_rx2, im_rx2);
+    emit ((Radar*)context)->rangeDataChanged(re_rx1);
 }
 
 void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const  Target_Info_t* frame_info, uint8_t num_targets)

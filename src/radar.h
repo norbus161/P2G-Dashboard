@@ -30,8 +30,9 @@ public slots:
     void stopMeasurement();
 
 signals:
-    void frameDataChanged(QList<QPointF> const & re_rx1, QList<QPointF> const & im_rx1,
+    void timeDataChanged(QList<QPointF> const & re_rx1, QList<QPointF> const & im_rx1,
                           QList<QPointF> const & re_rx2, QList<QPointF> const & im_rx2);
+    void rangeDataChanged(QList<QPointF> const & data);
     void targetDataChanged(QVector<Target_Info_t> const & data);
 
 private:

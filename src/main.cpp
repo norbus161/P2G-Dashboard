@@ -26,7 +26,8 @@ int main(int argc, char *argv[])
     // Signal slot connections
     qRegisterMetaType<QList<QPointF>>("QList<QPointF>");
     qRegisterMetaType<QVector<Target_Info_t>>("QVector<Target_Info_t>");
-    QObject::connect(&r, &Radar::frameDataChanged, &w, &MainWindow::updateFrameData, Qt::AutoConnection);
+    QObject::connect(&r, &Radar::timeDataChanged, &w, &MainWindow::updateTimeData, Qt::AutoConnection);
+    QObject::connect(&r, &Radar::rangeDataChanged, &w, &MainWindow::updateRangeData, Qt::AutoConnection);
     QObject::connect(&r, &Radar::targetDataChanged, &w, &MainWindow::updateTargetData, Qt::AutoConnection);
     QObject::connect(t, &QThread::started, &r, &Radar::doMeasurement, Qt::AutoConnection);
     QObject::connect(&w, &MainWindow::closed, &r, &Radar::disconnect, Qt::DirectConnection);

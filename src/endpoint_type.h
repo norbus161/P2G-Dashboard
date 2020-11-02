@@ -1,6 +1,7 @@
 #ifndef ENDPOINT_TYPE_H
 #define ENDPOINT_TYPE_H
 
+
 enum class EndpointType
 {
     Calibration,
