@@ -25,7 +25,7 @@ set(P2G_SOURCE_FILES
     src/Protocol.c
 )
 
-if(LINUX)
+if(UNIX)
     set(P2G_SERIAL_INTERFACE src/COMPort_Unix.c)
 elseif(WIN32)
     set(P2G_SERIAL_INTERFACE src/COMPort_Windows.c)

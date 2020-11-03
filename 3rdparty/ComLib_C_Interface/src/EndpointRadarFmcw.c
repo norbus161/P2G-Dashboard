@@ -24,7 +24,7 @@
    1. INCLUDE FILES
 ==============================================================================
 */
-#include "EndpointRadarFMCW.h"
+#include "EndpointRadarFmcw.h"
 #define __PROTOCOL_INCLUDE_ENDPOINT_ONLY_API__
 #include "Protocol_internal.h"
 #undef __PROTOCOL_INCLUDE_ENDPOINT_ONLY_API__
