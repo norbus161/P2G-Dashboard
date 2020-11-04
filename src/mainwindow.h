@@ -11,9 +11,6 @@
 
 
 QT_BEGIN_NAMESPACE
-namespace QtCharts { class QLineSeries; }
-namespace QtCharts { class QAreaSeries; }
-namespace QtCharts { class QScatterSeries; }
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
@@ -33,7 +30,7 @@ public:
 public slots:
     void updateTimeData(QList<QPointF> const & re_rx1, QList<QPointF> const & im_rx1,
                          QList<QPointF> const & re_rx2, QList<QPointF> const & im_rx2);
-    void updateRangeData(QList<QPointF> const & data);
+    void updateRangeData(QList<QPointF> const & rx1, QList<QPointF> const & rx2);
     void updateTargetData(QVector<Target_Info_t> const & data);
 
 signals:
@@ -45,8 +42,13 @@ private:
     QtCharts::QLineSeries * m_time_data_series_im_rx1;
     QtCharts::QLineSeries * m_time_data_series_re_rx2;
     QtCharts::QLineSeries * m_time_data_series_im_rx2;
-    QtCharts::QAreaSeries * m_range_data_series;
-    QtCharts::QLineSeries * m_range_data_series_upper;
+
+    QtCharts::QAreaSeries * m_range_data_series_rx1;
+    QtCharts::QLineSeries * m_range_data_series_upper_rx1;
+    QtCharts::QAreaSeries * m_range_data_series_rx2;
+    QtCharts::QLineSeries * m_range_data_series_upper_rx2;
+    QtCharts::QScatterSeries * m_range_data_maximum_rx1;
+
     QtCharts::QScatterSeries * m_target_data_series;
 };
 #endif // MAINWINDOW_H

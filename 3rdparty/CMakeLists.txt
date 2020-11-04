@@ -1,1 +1,2 @@
 add_subdirectory(ComLib_C_Interface)
+add_subdirectory(dj_fft)

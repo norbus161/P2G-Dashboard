@@ -30,7 +30,7 @@ if(UNIX)
 elseif(WIN32)
     set(P2G_SERIAL_INTERFACE src/COMPort_Windows.c)
 else()
-    message( FATAL_ERROR "Invalid platform for the P2G serial interface." )
+    message(FATAL_ERROR "Invalid platform for the P2G serial interface." )
 endif()
 
 include_directories(include)

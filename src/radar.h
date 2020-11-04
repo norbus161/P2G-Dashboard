@@ -2,6 +2,7 @@
 #define RADAR_H
 
 #include "endpoint_type.h"
+#include "signalprocessor.h"
 
 #include <EndpointRadarBase.h>
 #include <EndpointTargetDetection.h>
@@ -28,11 +29,12 @@ public slots:
     void disconnect();
     void doMeasurement();
     void stopMeasurement();
-
+    void emitRangeDataSignal(QList<QPointF> const & re_rx1, QList<QPointF> const & im_rx1,
+                             QList<QPointF> const & re_rx2, QList<QPointF> const & im_rx2);
 signals:
     void timeDataChanged(QList<QPointF> const & re_rx1, QList<QPointF> const & im_rx1,
                           QList<QPointF> const & re_rx2, QList<QPointF> const & im_rx2);
-    void rangeDataChanged(QList<QPointF> const & data);
+    void rangeDataChanged(QList<QPointF> const & rx1, QList<QPointF> const & rx2);
     void targetDataChanged(QVector<Target_Info_t> const & data);
 
 private:
@@ -44,6 +46,8 @@ private:
     int m_handle;
     bool m_shutdown;
     QMap<EndpointType, int> m_endpoints;
+    SignalProcessor * m_signal_processor_antenna1;
+    SignalProcessor * m_signal_processor_antenna2;
 };
 
 #endif // RADAR_H

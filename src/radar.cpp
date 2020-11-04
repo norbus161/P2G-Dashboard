@@ -27,6 +27,8 @@ Radar::Radar(QObject *parent) : QObject(parent)
 {
     m_handle = STATE_RADAR_DISCONNECTED;
     m_shutdown = false;
+    m_signal_processor_antenna1 = new SignalProcessor();
+    m_signal_processor_antenna2 = new SignalProcessor();
 }
 
 Radar::~Radar()
@@ -176,6 +178,13 @@ void Radar::stopMeasurement()
     m_shutdown = true;
 }
 
+void Radar::emitRangeDataSignal(const QList<QPointF> &re_rx1, const QList<QPointF> &im_rx1,
+                                const QList<QPointF> &re_rx2, const QList<QPointF> &im_rx2)
+{
+    emit rangeDataChanged(m_signal_processor_antenna1->calculateRangeData(re_rx1, im_rx1),
+                          m_signal_processor_antenna2->calculateRangeData(re_rx2, im_rx2));
+}
+
 void Radar::printSerialPortInformation(const QSerialPortInfo &info)
 {
     QString s = QObject::tr("Port: ") + info.portName() + "\n"
@@ -234,7 +243,7 @@ void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const 
     }
 
     emit ((Radar*)context)->timeDataChanged(re_rx1, im_rx1, re_rx2, im_rx2);
-    emit ((Radar*)context)->rangeDataChanged(re_rx1);
+    ((Radar*)context)->emitRangeDataSignal(re_rx1, im_rx1, re_rx2, im_rx2);
 }
 
 void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const  Target_Info_t* frame_info, uint8_t num_targets)

@@ -61,18 +61,32 @@ void MainWindow::initializeTimeDataPlot()
 
 void MainWindow::initializeRangeDataPlot()
 {
-    m_range_data_series_upper = new QLineSeries();
-    m_range_data_series = new QAreaSeries(m_range_data_series_upper);
-    m_range_data_series->setName("Antenna 1");
+    m_range_data_series_upper_rx1 = new QLineSeries();
+    m_range_data_series_rx1 = new QAreaSeries(m_range_data_series_upper_rx1);
+    m_range_data_series_rx1->setName("Antenna 1");
+
+    m_range_data_series_upper_rx2 = new QLineSeries();
+    m_range_data_series_rx2 = new QAreaSeries(m_range_data_series_upper_rx2);
+    m_range_data_series_rx2->setName("Antenna 2");
+
+    m_range_data_maximum_rx1 = new QScatterSeries();
+    m_range_data_maximum_rx1->setMarkerShape(QScatterSeries::MarkerShapeRectangle);
+    m_range_data_maximum_rx1->setMarkerSize(7);
+    m_range_data_maximum_rx1->setName("Maximum antenna 1");
+    m_range_data_maximum_rx1->setPointLabelsVisible(true);
+    m_range_data_maximum_rx1->setPointLabelsColor(Qt::white);
+    m_range_data_maximum_rx1->setPointLabelsFormat("@xPoint m");
 
     QChart *chart = new QChart();
     chart->setTheme(QChart::ChartThemeBlueCerulean);
-    chart->addSeries(m_range_data_series);
+    chart->addSeries(m_range_data_series_rx1);
+    chart->addSeries(m_range_data_series_rx2);
+    chart->addSeries(m_range_data_maximum_rx1);
 
     chart->setTitle("Range spectrum");
     chart->createDefaultAxes();
-    chart->axes(Qt::Horizontal).back()->setRange(0, 63);
-    chart->axes(Qt::Vertical).back()->setRange(0, 1.2);
+    chart->axes(Qt::Horizontal).back()->setRange(0, 10.0);
+    chart->axes(Qt::Vertical).back()->setRange(0, 1.0);
     chart->axes(Qt::Horizontal).back()->setTitleText("Range [m]");
     chart->axes(Qt::Vertical).back()->setTitleText("Magnitude");
 
@@ -143,10 +157,30 @@ void MainWindow::updateTimeData(QList<QPointF> const & re_rx1, QList<QPointF> co
     m_time_data_series_im_rx2->append(im_rx2);
 }
 
-void MainWindow::updateRangeData(const QList<QPointF> &data)
+void MainWindow::updateRangeData(QList<QPointF> const & rx1, QList<QPointF> const & rx2)
 {
-    m_range_data_series_upper->clear();
-    m_range_data_series_upper->append(data);
+    m_range_data_series_upper_rx1->clear();
+    m_range_data_series_upper_rx2->clear();
+    m_range_data_series_upper_rx1->append(rx1);
+    m_range_data_series_upper_rx2->append(rx2);
+
+    QPointF max1(0,0);
+    QPointF max2(0,0);
+    for (size_t i = 0; i < rx1.size(); i++)
+    {
+        if (rx1[i].y() > max1.y())
+        {
+            max1 = rx1[i];
+        }
+        if (rx2[i].y() > max2.y())
+        {
+            max2 = rx2[i];
+        }
+    }
+
+    m_range_data_maximum_rx1->clear();
+    m_range_data_maximum_rx1->append(max1);
+    m_range_data_maximum_rx1->append(max2);
 }
 
 void MainWindow::updateTargetData(const QVector<Target_Info_t> &data)

@@ -22,6 +22,8 @@ add_executable(P2G-Gui
     src/main.cpp
     src/radar.h
     src/radar.cpp
+    src/signalprocessor.h
+    src/signalprocessor.cpp
     src/endpoint_type.h
     src/mainwindow.cpp
     src/mainwindow.h
@@ -32,6 +34,7 @@ target_include_directories(P2G-Gui PRIVATE 3rdparty/ComLib_C_Interface/include)
 
 target_link_libraries(P2G-Gui PRIVATE
     p2g
+    fft
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::SerialPort
     Qt${QT_VERSION_MAJOR}::Charts)
