@@ -37,6 +37,9 @@ signals:
     void closed();
 
 private:
+    void updateExtrema(QList<QPointF> const & rx1);
+
+private:
     Ui::MainWindow *ui;
     QtCharts::QLineSeries * m_time_data_series_re_rx1;
     QtCharts::QLineSeries * m_time_data_series_im_rx1;

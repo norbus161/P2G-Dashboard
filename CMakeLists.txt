@@ -35,6 +35,7 @@ target_include_directories(P2G-Gui PRIVATE 3rdparty/ComLib_C_Interface/include)
 target_link_libraries(P2G-Gui PRIVATE
     p2g
     fft
+    persistence1d
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::SerialPort
     Qt${QT_VERSION_MAJOR}::Charts)

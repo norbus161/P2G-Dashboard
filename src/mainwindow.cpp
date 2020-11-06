@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
+#include <persistence1d.hpp>
+
 #include <QFont>
 
 const size_t CHART_TITLE_FONT_SIZE = 20;
@@ -38,17 +40,31 @@ void MainWindow::initializeTimeDataPlot()
 
     QChart *chart = new QChart();
     chart->setTheme(QChart::ChartThemeBlueCerulean);
+    chart->setTitle("Time domain");
     chart->addSeries(m_time_data_series_re_rx1);
     chart->addSeries(m_time_data_series_im_rx1);
     chart->addSeries(m_time_data_series_re_rx2);
     chart->addSeries(m_time_data_series_im_rx2);
 
-    chart->setTitle("Time domain");
-    chart->createDefaultAxes();
-    chart->axes(Qt::Horizontal).back()->setRange(0, 63);
-    chart->axes(Qt::Vertical).back()->setRange(0, 1.2);
-    chart->axes(Qt::Horizontal).back()->setTitleText("Samples");
-    chart->axes(Qt::Vertical).back()->setTitleText("Amplitude");
+    QValueAxis *axisX = new QValueAxis;
+    axisX->setTitleText("Samples");
+    axisX->setRange(0, 63);
+    axisX->setLabelFormat("%d");
+    chart->addAxis(axisX, Qt::AlignBottom);
+    m_time_data_series_re_rx1->attachAxis(axisX);
+    m_time_data_series_im_rx1->attachAxis(axisX);
+    m_time_data_series_re_rx2->attachAxis(axisX);
+    m_time_data_series_im_rx2->attachAxis(axisX);
+
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setTitleText("Amplitude");
+    axisY->setRange(0, 1.2);
+    axisY->setLabelFormat("%.1f");
+    chart->addAxis(axisY, Qt::AlignLeft);
+    m_time_data_series_re_rx1->attachAxis(axisY);
+    m_time_data_series_im_rx1->attachAxis(axisY);
+    m_time_data_series_re_rx2->attachAxis(axisY);
+    m_time_data_series_im_rx2->attachAxis(axisY);
 
     QFont font;
     font.setPixelSize(CHART_TITLE_FONT_SIZE);
@@ -70,9 +86,11 @@ void MainWindow::initializeRangeDataPlot()
     m_range_data_series_rx2->setName("Antenna 2");
 
     m_range_data_maximum_rx1 = new QScatterSeries();
+    m_range_data_maximum_rx1->setName("All extrema");
     m_range_data_maximum_rx1->setMarkerShape(QScatterSeries::MarkerShapeRectangle);
-    m_range_data_maximum_rx1->setMarkerSize(7);
-    m_range_data_maximum_rx1->setName("Maximum antenna 1");
+    m_range_data_maximum_rx1->setMarkerSize(10);
+    m_range_data_maximum_rx1->setBrush(Qt::red);
+    m_range_data_maximum_rx1->setBorderColor(Qt::transparent);
     m_range_data_maximum_rx1->setPointLabelsVisible(true);
     m_range_data_maximum_rx1->setPointLabelsColor(Qt::white);
     m_range_data_maximum_rx1->setPointLabelsFormat("@xPoint m");
@@ -82,13 +100,25 @@ void MainWindow::initializeRangeDataPlot()
     chart->addSeries(m_range_data_series_rx1);
     chart->addSeries(m_range_data_series_rx2);
     chart->addSeries(m_range_data_maximum_rx1);
-
     chart->setTitle("Range spectrum");
-    chart->createDefaultAxes();
-    chart->axes(Qt::Horizontal).back()->setRange(0, 10.0);
-    chart->axes(Qt::Vertical).back()->setRange(0, 1.0);
-    chart->axes(Qt::Horizontal).back()->setTitleText("Range [m]");
-    chart->axes(Qt::Vertical).back()->setTitleText("Magnitude");
+
+    QValueAxis *axisX = new QValueAxis;
+    axisX->setTitleText("Range [m]");
+    axisX->setRange(0, 10);
+    axisX->setLabelFormat("%.1f");
+    chart->addAxis(axisX, Qt::AlignBottom);
+    m_range_data_series_rx1->attachAxis(axisX);
+    m_range_data_series_rx2->attachAxis(axisX);
+    m_range_data_maximum_rx1->attachAxis(axisX);
+
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setTitleText("Magnitude");
+    axisY->setRange(0, 1.0);
+    axisY->setLabelFormat("%.1f");
+    chart->addAxis(axisY, Qt::AlignLeft);
+    m_range_data_series_rx1->attachAxis(axisY);
+    m_range_data_series_rx2->attachAxis(axisY);
+    m_range_data_maximum_rx1->attachAxis(axisY);
 
     QFont font;
     font.setPixelSize(CHART_TITLE_FONT_SIZE);
@@ -164,23 +194,7 @@ void MainWindow::updateRangeData(QList<QPointF> const & rx1, QList<QPointF> cons
     m_range_data_series_upper_rx1->append(rx1);
     m_range_data_series_upper_rx2->append(rx2);
 
-    QPointF max1(0,0);
-    QPointF max2(0,0);
-    for (size_t i = 0; i < rx1.size(); i++)
-    {
-        if (rx1[i].y() > max1.y())
-        {
-            max1 = rx1[i];
-        }
-        if (rx2[i].y() > max2.y())
-        {
-            max2 = rx2[i];
-        }
-    }
-
-    m_range_data_maximum_rx1->clear();
-    m_range_data_maximum_rx1->append(max1);
-    m_range_data_maximum_rx1->append(max2);
+    updateExtrema(rx1);
 }
 
 void MainWindow::updateTargetData(const QVector<Target_Info_t> &data)
@@ -191,6 +205,28 @@ void MainWindow::updateTargetData(const QVector<Target_Info_t> &data)
     {
         //qDebug() << e.radius/100 << " : " << e.azimuth;
         m_target_data_series->append(e.radius/100, e.azimuth);
+    }
+}
+
+void MainWindow::updateExtrema(QList<QPointF> const & rx1)
+{
+    std::vector<float> data;
+
+    for (int i = 0; i < rx1.size(); i++)
+    {
+        data.push_back(rx1[i].y());
+    }
+
+    p1d::Persistence1D p;
+    p.RunPersistence(data);
+    std::vector<p1d::TPairedExtrema> extrema;
+    p.GetPairedExtrema(extrema, 0.01);
+
+    m_range_data_maximum_rx1->clear();
+    for(std::vector<p1d::TPairedExtrema>::iterator it = extrema.begin(); it != extrema.end(); it++)
+    {
+        QPointF test(rx1[(*it).MaxIndex].x(), rx1[(*it).MaxIndex].y());
+        m_range_data_maximum_rx1->append(test);
     }
 }
 
