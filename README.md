@@ -1,4 +1,4 @@
-# P2G-Dashboard
+# Polarplot: show angle of the radar within the polarplotP2G-Dashboard
 
 Qt Widgets GUI to visualize some radar information of the Infineon Position2Go-Kit. 
 This includes: 
@@ -19,16 +19,16 @@ This includes:
 
 Clone the repository with SSH or HTTPS:
 
-`git clone https://github.com/norbus161/P2G-Gui.git`
+- `git clone https://github.com/norbus161/P2G-Gui.git`
 
 Navigate to the directory and create `build` directory:
 
-`cd P2G-Gui && mkdir build`
+- `cd P2G-Gui && mkdir build`
 
 Compile the release version for the application:
 
-`cmake -DCMAKE_BUILD_TYPE=Release ..`
-`make` 
+- `cmake -DCMAKE_BUILD_TYPE=Release ..`
+- `make` 
 
 ### Todos
 
@@ -37,6 +37,6 @@ Compile the release version for the application:
 - [ ] Rangeplot: show maxima labels only for the antenna (1 OR 2) with global maxima
 - [x] Polarplot: fix labels 
 - [ ] Polarplot: show angle of the radar within the polarplot
-- [ ] Refactor code
-- [ ] Compile release version for Ubuntu 18.04
-- [ ] Deliver executable with dependencies
+- [ ] **Refactor code**
+- [ ] **Compile release version for Ubuntu 18.04**
+- [ ] **Deliver executable with dependencies**
