@@ -1,4 +1,4 @@
-# Polarplot: show angle of the radar within the polarplotP2G-Dashboard
+# P2G-Dashboard
 
 Qt Widgets GUI to visualize some radar information of the Infineon Position2Go-Kit. 
 This includes: 
