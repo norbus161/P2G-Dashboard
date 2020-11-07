@@ -9,3 +9,6 @@
 ##### SerialPort:
 
 `crw-rw----  1 root  dialout 166,     0 Nov  7 18:40 ttyACM0`
+
+- `sudo usermod -a -G tty $USER`
+- ``sudo usermod -a -G dialout $USER`
