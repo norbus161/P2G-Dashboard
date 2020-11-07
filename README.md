@@ -25,9 +25,10 @@ Navigate to the directory and create `build` directory:
 
 `cd P2G-Gui && mkdir build`
 
-Call the CMake-command and compile the application:
+Compile the release version for the application:
 
-`cmake .. && make`
+`cmake -DCMAKE_BUILD_TYPE=Release ..`
+`make` 
 
 ### Todos
 
