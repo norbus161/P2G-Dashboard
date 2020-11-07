@@ -7,7 +7,7 @@ This includes:
 - Range data: FFT spectrum of both antennas
 - Polar plot: Visualizes the targets with range and angle
 
-![dashboard](C:\Users\Patrick\Desktop\P2G-Gui\doc\img\dashboard.JPG)
+![dashboard](https://github.com/norbus161/P2G-Gui/blob/main/doc/img/dashboard.JPG)
 
 ### Dependencies
 
@@ -21,11 +21,11 @@ Clone the repository with SSH or HTTPS:
 
 `git clone https://github.com/norbus161/P2G-Gui.git`
 
-Navigate to the directory and create `build` directory
+Navigate to the directory and create `build` directory:
 
 `cd P2G-Gui && mkdir build`
 
-Call the CMake-command and compile the application
+Call the CMake-command and compile the application:
 
 `cmake .. && make`
 
