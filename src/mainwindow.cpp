@@ -4,6 +4,7 @@
 #include <persistence1d.hpp>
 
 #include <QFont>
+#include <QValueAxis>
 
 const size_t CHART_TITLE_FONT_SIZE = 20;
 
@@ -87,10 +88,10 @@ void MainWindow::initializeRangeDataPlot()
 
     m_range_data_maximum_rx1 = new QScatterSeries();
     m_range_data_maximum_rx1->setName("All extrema");
-    m_range_data_maximum_rx1->setMarkerShape(QScatterSeries::MarkerShapeRectangle);
-    m_range_data_maximum_rx1->setMarkerSize(10);
+    m_range_data_maximum_rx1->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+    m_range_data_maximum_rx1->setMarkerSize(12);
     m_range_data_maximum_rx1->setBrush(Qt::red);
-    m_range_data_maximum_rx1->setBorderColor(Qt::transparent);
+    m_range_data_maximum_rx1->setBorderColor(Qt::white);
     m_range_data_maximum_rx1->setPointLabelsVisible(true);
     m_range_data_maximum_rx1->setPointLabelsColor(Qt::white);
     m_range_data_maximum_rx1->setPointLabelsFormat("@xPoint m");
@@ -131,38 +132,31 @@ void MainWindow::initializeRangeDataPlot()
 
 void MainWindow::initializeTargetDataPlot()
 {
-    const qreal angularMin = -180;
-    const qreal angularMax = 180;
-
-    const qreal radialMin = 0;
-    const qreal radialMax = 10;
-
     m_target_data_series = new QScatterSeries();
     m_target_data_series->setName("Detected targets");
+    m_target_data_series->setMarkerSize(12);
+    m_target_data_series->setColor(Qt::red);
+    m_target_data_series->setBorderColor(Qt::white);
 
     QPolarChart *chart = new QPolarChart();
-    chart->addSeries(m_target_data_series);
+    chart->setTheme(QChart::ChartThemeBlueCerulean);
+    chart->addSeries(m_target_data_series);    
+    chart->setTitle("Polar plot of targets");
 
     QValueAxis *angularAxis = new QValueAxis();
-    angularAxis->setTickCount(9); // First and last ticks are co-located on 0/360 angle.
-    angularAxis->setLabelFormat("%d");
-    angularAxis->setShadesVisible(true);
-    angularAxis->setShadesBrush(QBrush(QColor(249, 249, 255)));
+    angularAxis->setRange(-180, 180);
+    angularAxis->setTickAnchor(180);
+    angularAxis->setTickCount(9);
+    angularAxis->setLabelFormat("%d" + QString::fromLatin1("°"));
     chart->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
+    m_target_data_series->attachAxis(angularAxis);
 
     QValueAxis *radialAxis = new QValueAxis();
+    radialAxis->setRange(0, 10);
     radialAxis->setTickCount(6);
     radialAxis->setLabelFormat("%d [m]");
     chart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
-
     m_target_data_series->attachAxis(radialAxis);
-    m_target_data_series->attachAxis(angularAxis);
-
-    chart->setTitle("Polar plot of targets");
-    chart->setTheme(QChart::ChartThemeBlueCerulean);
-    radialAxis->setRange(radialMin, radialMax);
-    angularAxis->setRange(angularMin, angularMax);
-    angularAxis->setTickAnchor(angularMax);
 
     QFont font;
     font.setPixelSize(CHART_TITLE_FONT_SIZE);
@@ -194,7 +188,7 @@ void MainWindow::updateRangeData(QList<QPointF> const & rx1, QList<QPointF> cons
     m_range_data_series_upper_rx1->append(rx1);
     m_range_data_series_upper_rx2->append(rx2);
 
-    updateExtrema(rx1);
+    calculateRangeMaxima(rx1);
 }
 
 void MainWindow::updateTargetData(const QVector<Target_Info_t> &data)
@@ -202,31 +196,35 @@ void MainWindow::updateTargetData(const QVector<Target_Info_t> &data)
     m_target_data_series->clear();
 
     for (auto & e: data)
-    {
-        //qDebug() << e.radius/100 << " : " << e.azimuth;
-        m_target_data_series->append(e.radius/100, e.azimuth);
-    }
+        m_target_data_series->append(QPointF(e.azimuth, e.radius / 100));
 }
 
-void MainWindow::updateExtrema(QList<QPointF> const & rx1)
+void MainWindow::calculateRangeMaxima(QList<QPointF> const & rx1)
 {
     std::vector<float> data;
 
     for (int i = 0; i < rx1.size(); i++)
-    {
         data.push_back(rx1[i].y());
-    }
 
     p1d::Persistence1D p;
     p.RunPersistence(data);
+
     std::vector<p1d::TPairedExtrema> extrema;
     p.GetPairedExtrema(extrema, 0.01);
 
+    auto maximum = 0.0;
     m_range_data_maximum_rx1->clear();
+
     for(std::vector<p1d::TPairedExtrema>::iterator it = extrema.begin(); it != extrema.end(); it++)
     {
-        QPointF test(rx1[(*it).MaxIndex].x(), rx1[(*it).MaxIndex].y());
-        m_range_data_maximum_rx1->append(test);
+        auto x = rx1[(*it).MaxIndex].x();
+        auto y = rx1[(*it).MaxIndex].y();
+
+        m_range_data_maximum_rx1->append(QPointF(x, y));
+
+        if (y > maximum)
+            maximum = y;
     }
+    static_cast<QValueAxis*>(ui->range_data->chart()->axes(Qt::Vertical).back())->setMax(maximum + 0.2);
 }
 

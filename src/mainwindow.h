@@ -37,7 +37,7 @@ signals:
     void closed();
 
 private:
-    void updateExtrema(QList<QPointF> const & rx1);
+    void calculateRangeMaxima(QList<QPointF> const & rx1);
 
 private:
     Ui::MainWindow *ui;

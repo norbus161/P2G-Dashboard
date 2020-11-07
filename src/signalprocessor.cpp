@@ -90,7 +90,8 @@ void SignalProcessor::generateRangeVector()
 {
     for (double i = 0.0; i <= (RADAR_SAMPLING_FREQUENCY/2 - RANGE_SPECTRUM_DF); i+=RANGE_SPECTRUM_DF)
     {
-        m_range_vec.push_back(i * RADAR_RAMP_TIME_EFF * SPEED_OF_LIGHT / (2 * RADAR_BANDWITH_EFF));
+        auto val = i * RADAR_RAMP_TIME_EFF * SPEED_OF_LIGHT / (2 * RADAR_BANDWITH_EFF);
+        m_range_vec.push_back(QString::number(val, 'f', 2).toDouble());
     }
 }
 
