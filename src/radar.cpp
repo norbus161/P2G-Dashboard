@@ -41,7 +41,11 @@ bool Radar::connect()
     const auto infos = QSerialPortInfo::availablePorts();
     for (const QSerialPortInfo &info : infos)
     {
-        m_handle = protocol_connect(info.portName().toStdString().c_str());
+        #ifdef __linux__
+            m_handle = protocol_connect(("/dev/" + info.portName()).toStdString().c_str());
+        #elif _WIN32
+            m_handle = protocol_connect(info.portName().toStdString().c_str());
+        #endif
 
         if (m_handle >= 0)
         {

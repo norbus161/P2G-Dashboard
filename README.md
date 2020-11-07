@@ -38,5 +38,5 @@ Compile the release version for the application:
 - [x] Polarplot: fix labels 
 - [ ] Polarplot: show angle of the radar within the polarplot
 - [ ] **Refactor code**
-- [ ] **Compile release version for Ubuntu 18.04**
+- [x] **Compile release version for Ubuntu 18.04**
 - [ ] **Deliver executable with dependencies**
