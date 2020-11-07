@@ -31,9 +31,11 @@ Call the CMake-command and compile the application:
 
 ### Todos
 
-- [x] Rangeplot automatic scaling for y-axes
-- [x] Rangeplot fix decimals for maxima labels
-- [x] Polarplot 
+- [x] Rangeplot: automatic scaling for y-axes
+- [x] Rangeplot: fix decimals for maxima labels
+- [ ] Rangeplot: show maxima labels only for the antenna (1 OR 2) with global maxima
+- [x] Polarplot: fix labels 
+- [ ] Polarplot: show angle of the radar within the polarplot
 - [ ] Refactor code
 - [ ] Compile release version for Ubuntu 18.04
 - [ ] Deliver executable with dependencies
