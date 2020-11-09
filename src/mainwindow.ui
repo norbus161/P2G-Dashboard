@@ -14,14 +14,14 @@
    <string>P2G-Gui</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QChartView" name="time_data"/>
+     <widget class="QChartView" name="target_data"/>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QChartView" name="target_data"/>
+       <widget class="QChartView" name="time_data"/>
       </item>
       <item>
        <widget class="QChartView" name="range_data"/>
