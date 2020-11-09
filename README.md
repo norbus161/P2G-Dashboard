@@ -36,7 +36,8 @@ Compile the release version for the application:
 - [x] Rangeplot: fix decimals for maxima labels
 - [ ] Rangeplot: show maxima labels only for the antenna (1 OR 2) with global maxima
 - [x] Polarplot: fix labels 
-- [ ] Polarplot: show angle of the radar within the polarplot
+- [ ] Polarplot: show visible angle of the radar within the polarplot
+- [ ] Ini-File to configure target detection, detection of extrema and arrangement of  layouts.
 - [ ] **Refactor code**
 - [x] **Compile release version for Ubuntu 18.04**
 - [ ] **Deliver executable with dependencies**
