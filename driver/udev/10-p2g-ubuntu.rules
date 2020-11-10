@@ -1,0 +1,7 @@
+# This is a rules file for Linux's udev.  When a serial device is plugged in,
+# it will allow users to access the device.
+#
+# Put this file in /etc/udev/rules.d/
+
+# Position2Go Radar
+SUBSYSTEM=="tty", ATTRS{idVendor}=="058b", ATTRS{idProduct}=="0058", MODE="0666", SYMLINK+="ttyP2GRadar"

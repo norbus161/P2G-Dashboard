@@ -1,14 +1,14 @@
 ### Requirements on Ubuntu 18.04
 
-##### SerialPort:
+#### Dependencies:
 
- i.e.: `sudo chmod 777 /dev/ttyACM0`
+`sudo apt-get update`
+`sudo apt-get install libxcb-xinput0 `
+`sudo apt-get install libxcb-xinerama0`
 
-##### Dependencies:
+Check with `ldd P2G-Gui` that all dependencies are met
 
-`sudo apt-get install libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxcd-xinerama-dev libxkbcommon-dev libxkbcommon-x11-dev`
-
-##### Check:
+#### Output (best case):
 
 - ​	`linux-vdso.so.1 (0x00007ffcf2d60000)`
 - ​	`libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f755ea08000)`
@@ -50,6 +50,18 @@
 - ​	`libGLdispatch.so.0 => /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0 (0x00007f755998f000)`
 - ​	`libbsd.so.0 => /lib/x86_64-linux-gnu/libbsd.so.0 (0x00007f755977a000)`
 - ​	`librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007f7559572000)`
+
+
+
+#### Permissions:
+
+`sudo cp /driver/udev/10-p2g-ubuntu.rules /etc/udev/rules.d`
+`sudo udevadm control --reload`
+`sudo reboot -h now`
+
+#### Execute the application:
+
+`./P2G-Gui` 
 
 
 

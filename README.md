@@ -32,12 +32,12 @@ Compile the release version for the application:
 
 ### Todos
 
-- [x] Rangeplot: automatic scaling for y-axes
-- [x] Rangeplot: fix decimals for maxima labels
 - [ ] Rangeplot: show maxima labels only for the antenna (1 OR 2) with global maxima
-- [x] Polarplot: fix labels 
 - [ ] Polarplot: show visible angle of the radar within the polarplot
-- [ ] Ini-File to configure target detection, detection of extrema and arrangement of  layouts.
+- [ ] Polarplot: 180 degrees instead of 360 degrees
+- [ ] Create Ini-File to configure target detection, detection of extrema and arrangement of  layouts.
+- [ ] **Create udev rule for serial port** 
+- [ ] **Create installation guide**
 - [ ] **Refactor code**
-- [x] **Compile release version for Ubuntu 18.04**
-- [ ] **Deliver executable with dependencies**
+- [x] **Compile static linked qt release version for Ubuntu 18.04**
+- [ ] **Deliver executable with install guide**
