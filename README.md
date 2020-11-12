@@ -36,8 +36,8 @@ Compile the release version for the application:
 - [ ] Polarplot: show visible angle of the radar within the polarplot
 - [ ] Polarplot: 180 degrees instead of 360 degrees
 - [ ] Create Ini-File to configure target detection, detection of extrema and arrangement of  layouts.
-- [ ] **Create udev rule for serial port** 
-- [ ] **Create installation guide**
+- [x] **Create udev rule for serial port** 
+- [x] **Create installation guide**
 - [ ] **Refactor code**
 - [x] **Compile static linked qt release version for Ubuntu 18.04**
-- [ ] **Deliver executable with install guide**
+- [x] **Deliver executable with install guide**
