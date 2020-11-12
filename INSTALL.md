@@ -3,10 +3,12 @@
 #### Dependencies:
 
 `sudo apt-get update`
+
 `sudo apt-get install libxcb-xinput0 `
+
 `sudo apt-get install libxcb-xinerama0`
 
-Check with `ldd P2G-Gui` that all dependencies are met
+Check with `ldd ./P2G-Dashboard` that all dependencies are met
 
 #### Output (best case):
 
@@ -55,13 +57,15 @@ Check with `ldd P2G-Gui` that all dependencies are met
 
 #### Permissions:
 
-`sudo cp /driver/udev/10-p2g-ubuntu.rules /etc/udev/rules.d`
+`sudo cp ./driver/udev/10-p2g-ubuntu.rules /etc/udev/rules.d`
+
 `sudo udevadm control --reload`
+
 `sudo reboot -h now`
 
 #### Execute the application:
 
-`./P2G-Gui` 
+`./P2G-Dashboard` 
 
 
 

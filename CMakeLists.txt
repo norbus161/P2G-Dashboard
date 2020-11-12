@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(P2G-Gui LANGUAGES C CXX)
+project(P2G-Dashboard LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -18,7 +18,7 @@ add_subdirectory(3rdparty)
 find_package(Qt5SerialPort REQUIRED)
 find_package(Qt5Charts REQUIRED)
 
-add_executable(P2G-Gui
+add_executable(P2G-Dashboard
     src/main.cpp
     src/radar.h
     src/radar.cpp
@@ -30,9 +30,9 @@ add_executable(P2G-Gui
     src/mainwindow.ui
 )
 
-target_include_directories(P2G-Gui PRIVATE 3rdparty/ComLib_C_Interface/include)
+target_include_directories(P2G-Dashboard PRIVATE 3rdparty/ComLib_C_Interface/include)
 
-target_link_libraries(P2G-Gui PRIVATE
+target_link_libraries(P2G-Dashboard PRIVATE
     p2g
     fft
     persistence1d
