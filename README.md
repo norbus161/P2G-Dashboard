@@ -1,13 +1,13 @@
 # P2G-Dashboard
 
-Qt Widgets GUI to visualize some radar information of the Infineon Position2Go-Kit. 
+Qt Widgets GUI to visualize some radar information of the [Infineon Position2Go-Kit](https://www.infineon.com/cms/en/product/evaluation-boards/demo-position2go/?redirId=102975). 
 This includes: 
 
 - Raw data: I and Q component of both antennas
 - Range data: FFT spectrum of both antennas
 - Polar plot: Visualizes the targets with range and angle
 
-![dashboard](https://github.com/norbus161/P2G-Gui/blob/main/doc/img/dashboard.JPG)
+![dashboard](https://github.com/norbus161/P2G-Dashboard/blob/main/doc/img/dashboard.JPG)
 
 ### Dependencies
 
@@ -15,20 +15,24 @@ This includes:
 * `Qt 5.15.1`
   * `QtCharts`
 
-### Build instructions
+### Build instructions 
 
-Clone the repository with SSH or HTTPS:
+Clone the repository:
 
-- `git clone https://github.com/norbus161/P2G-Gui.git`
+- `git clone https://github.com/norbus161/P2G-Dashboard.git`
 
 Navigate to the directory and create `build` directory:
 
-- `cd P2G-Gui && mkdir build`
+- `cd P2G-Dashboard && mkdir build`
 
 Compile the release version for the application:
 
 - `cmake -DCMAKE_BUILD_TYPE=Release ..`
 - `make` 
+
+Execute the application:
+
+- `./P2G-Dashboard`
 
 ### Todos
 
