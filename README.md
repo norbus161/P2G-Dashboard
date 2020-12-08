@@ -28,30 +28,40 @@ This includes:
 
 Clone the repository:
 
-- `git clone https://github.com/norbus161/P2G-Dashboard.git`
+```bash
+git clone https://github.com/norbus161/P2G-Dashboard.git
+```
 
 Navigate to the directory and create `build` directory:
 
-- `cd P2G-Dashboard && mkdir build`
+```bash
+cd P2G-Dashboard && mkdir build
+```
 
 Compile the release version for the application:
 
-- `cd build`
-
-- `cmake -DCMAKE_BUILD_TYPE=Release ..`
-- `make` 
+```bash
+cd build && cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+```
 
 ### Serial port & execution
 
 Linux: Set up the permissions for accessing the serial port:
 
-- `cd .. && sudo cp ./driver/udev/10-p2g-linux.rules /etc/udev/rules.d`
-- `sudo udevadm control --reload`
-- `sudo reboot -h now`
+```bash
+cd .. && sudo cp ./driver/udev/10-p2g-linux.rules /etc/udev/rules.d
+sudo udevadm control --reload
+sudo reboot -h now
+```
 
 Execute the application:
 
-- `./P2G-Dashboard`
+```bash
+./P2G-Dashboard
+```
+
+
 
 ### Todos
 
