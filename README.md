@@ -1,6 +1,6 @@
 # P2G-Dashboard
 
-Qt Widgets GUI to visualize some radar information of the [Infineon Position2Go-Kit](https://www.infineon.com/cms/en/product/evaluation-boards/demo-position2go/?redirId=102975). 
+Qt Widgets Dashboard to visualize some radar information of the 24GHz [Infineon Position2Go Radar](https://www.infineon.com/cms/en/product/evaluation-boards/demo-position2go/?redirId=102975). 
 
 This includes: 
 
@@ -10,11 +10,19 @@ This includes:
 
 ![dashboard](https://github.com/norbus161/P2G-Dashboard/blob/main/doc/img/dashboard.JPG)
 
+### Used 3rdparty libraries
+
+- [Persistance1D](https://github.com/weinkauf/Persistence1D): Extracting and filtering minima and maxima of 1D functions
+- [dj_fft](https://github.com/jdupuy/dj_fft): FFT processing
+- [ComLib_C_Interface](https://www.infineon.com/cms/en/tools/landing/infineontoolbox.html?redirId=102781): API for the radar sensor (Included in the Toolbox)
+
 ### Dependencies
 
 * `CMake 3.5`
 * `Qt 5.15.1`
-  * `QtCharts`
+  * `Qt5Widgets`
+  * `Qt5SerialPort`
+  * `Qt5Charts`
 
 ### Build instructions 
 
@@ -28,8 +36,18 @@ Navigate to the directory and create `build` directory:
 
 Compile the release version for the application:
 
+- `cd build`
+
 - `cmake -DCMAKE_BUILD_TYPE=Release ..`
 - `make` 
+
+### Serial port & execution
+
+Linux: Set up the permissions for accessing the serial port:
+
+- `cd .. && sudo cp ./driver/udev/10-p2g-linux.rules /etc/udev/rules.d`
+- `sudo udevadm control --reload`
+- `sudo reboot -h now`
 
 Execute the application:
 
