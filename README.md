@@ -1,6 +1,7 @@
 # P2G-Dashboard
 
 Qt Widgets GUI to visualize some radar information of the [Infineon Position2Go-Kit](https://www.infineon.com/cms/en/product/evaluation-boards/demo-position2go/?redirId=102975). 
+
 This includes: 
 
 - Raw data: I and Q component of both antennas
