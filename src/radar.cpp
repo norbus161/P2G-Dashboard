@@ -66,6 +66,13 @@ void Radar::disconnect()
     if (!m_shutdown)
         stopMeasurement();
 
+    auto ret = protocol_do_firmware_reset(m_handle);
+    if (ret != 0)
+    {
+        qCritical() << "Error while resetting device.";
+        printStatusCodeInformation(ret);
+    }
+
     if (m_handle >= 0)
         protocol_disconnect(m_handle);
 
@@ -172,8 +179,10 @@ void Radar::doMeasurement()
 
     while(!m_shutdown)
     {
-        ep_radar_base_get_frame_data(m_handle, m_endpoints[EndpointType::Base], 1);
-        ep_targetdetect_get_targets(m_handle, m_endpoints[EndpointType::TargetDetection]);
+        qDebug() << "Radar base: get Frame:";
+        printStatusCodeInformation(ep_radar_base_get_frame_data(m_handle, m_endpoints[EndpointType::Base], 0));
+        qDebug() << "Target detect: get Targets:";
+        printStatusCodeInformation(ep_targetdetect_get_targets(m_handle, m_endpoints[EndpointType::TargetDetection]));
         QThread::msleep(100);
     }
 }
