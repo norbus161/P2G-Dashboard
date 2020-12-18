@@ -174,6 +174,7 @@ void Radar::doMeasurement()
     {
         ep_radar_base_get_frame_data(m_handle, m_endpoints[EndpointType::Base], 1);
         ep_targetdetect_get_targets(m_handle, m_endpoints[EndpointType::TargetDetection]);
+        QThread::msleep(100);
     }
 }
 
@@ -191,6 +192,7 @@ void Radar::emitRangeDataSignal(const QList<QPointF> &re_rx1, const QList<QPoint
 
 void Radar::printSerialPortInformation(const QSerialPortInfo &info)
 {
+    qDebug() << "-------------------------------";
     QString s = QObject::tr("Port: ") + info.portName() + "\n"
                 + QObject::tr("Location: ") + info.systemLocation() + "\n"
                 + QObject::tr("Description: ") + info.description() + "\n"
@@ -204,6 +206,7 @@ void Radar::printSerialPortInformation(const QSerialPortInfo &info)
 
 void Radar::printFirmwareInformation()
 {
+    qDebug() << "-------------------------------";
     Firmware_Information_t info;
     protocol_get_firmware_information(m_handle, &info);
 
