@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
     if (attempts == 0)
     {
         qCritical() << "Aborted: Failed to connect to radar sensor. ";
+        return -1;
     }
 
 
