@@ -11,9 +11,19 @@ const size_t CHART_TITLE_FONT_SIZE = 20;
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     initializeTimeDataPlot();
     initializeRangeDataPlot();
     initializeTargetDataPlot();
+
+    ui->range_data->chart()->layout()->setContentsMargins(0, 0, 0, 0);
+    ui->range_data->chart()->setBackgroundRoundness(0);
+
+    ui->time_data->chart()->layout()->setContentsMargins(0, 0, 0, 0);
+    ui->time_data->chart()->setBackgroundRoundness(0);
+
+    ui->target_data->chart()->layout()->setContentsMargins(0, 0, 0, 0);
+    ui->target_data->chart()->setBackgroundRoundness(0);
 }
 
 MainWindow::~MainWindow()
