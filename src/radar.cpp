@@ -11,7 +11,6 @@
 #include <EndpointRadarIndustrial.h>
 #include <EndpointRadarP2G.h>
 #include <Protocol.h>
-
 #include <QDebug>
 #include <QThread>
 
@@ -27,8 +26,6 @@ Radar::Radar(QObject *parent) : QObject(parent)
 {
     m_handle = STATE_RADAR_DISCONNECTED;
     m_shutdown = false;
-    m_signal_processor_antenna1 = new SignalProcessor();
-    m_signal_processor_antenna2 = new SignalProcessor();
 }
 
 Radar::~Radar()
@@ -205,8 +202,8 @@ void Radar::doMeasurement()
 void Radar::emitRangeDataSignal(const DataPoints_t &re_rx1, const DataPoints_t &im_rx1,
                                 const DataPoints_t &re_rx2, const DataPoints_t &im_rx2)
 {
-    emit rangeDataChanged(m_signal_processor_antenna1->calculateRangeData(re_rx1, im_rx1),
-                          m_signal_processor_antenna2->calculateRangeData(re_rx2, im_rx2));
+    emit rangeDataChanged(m_signal_processor_antenna1.calculateRangeData(re_rx1, im_rx1),
+                          m_signal_processor_antenna2.calculateRangeData(re_rx2, im_rx2));
 }
 
 void Radar::printSerialPortInformation(const QSerialPortInfo &info)

@@ -6,10 +6,8 @@
 
 #include <EndpointRadarBase.h>
 #include <EndpointTargetDetection.h>
-
 #include <QtSerialPort/QSerialPortInfo>
 #include <QObject>
-#include <QVector>
 #include <QMap>
 #include <QMutex>
 
@@ -47,8 +45,8 @@ private:
     bool m_shutdown;
     QRecursiveMutex m;
     QMap<EndpointType_t, int> m_endpoints;
-    SignalProcessor * m_signal_processor_antenna1;
-    SignalProcessor * m_signal_processor_antenna2;
+    SignalProcessor m_signal_processor_antenna1;
+    SignalProcessor m_signal_processor_antenna2;
 };
 
 #endif // RADAR_H
