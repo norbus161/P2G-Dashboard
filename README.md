@@ -15,6 +15,7 @@ This includes:
 - [`Persistance1D`](https://github.com/weinkauf/Persistence1D): Extracting and filtering minima and maxima of 1D functions
 - [`dj_fft`](https://github.com/jdupuy/dj_fft): FFT processing
 - [`ComLib_C_Interface`](https://www.infineon.com/cms/en/tools/landing/infineontoolbox.html?redirId=102781): API for the radar sensor (Included in the Toolbox)
+- [`sigwatch`](https://github.com/sijk/qt-unix-signals): Unix signal watcher for Qt
 
 ### Dependencies
 

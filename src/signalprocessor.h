@@ -1,20 +1,19 @@
 #ifndef SIGNALPROCESSOR_H
 #define SIGNALPROCESSOR_H
 
-#include <QList>
-#include <QPointF>
-#include <complex>
+#include "types.h"
+
 
 class SignalProcessor
 {
 public:
     SignalProcessor();
-    QList<QPointF> calculateRangeData(QList<QPointF> const & re, QList<QPointF> const & im);
+    DataPoints_t calculateRangeData(DataPoints_t const & re, DataPoints_t const & im);
 
 private:
     void initialize();
-    void setMeanValuesOfSignal(QList<QPointF> const & re, QList<QPointF> const & im);
-    void generateComplexSignal(QList<QPointF> const & re, QList<QPointF> const & im);
+    void setMeanValuesOfSignal(DataPoints_t const & re, DataPoints_t const & im);
+    void generateComplex_tSignal(DataPoints_t const & re, DataPoints_t const & im);
     void generateHannWindow();
     void generateRangeVector();
     void windowComplexSignal();
@@ -23,9 +22,9 @@ private:
 private:
     double m_re_mean;
     double m_im_mean;
-    std::vector<double> m_window;
-    std::vector<double> m_range_vec;
-    std::vector<std::complex<double>> m_complex_vec;
+    DoubleVec_t m_window;
+    DoubleVec_t m_range_vec;
+    ComplexVec_t m_complex_vec;
 };
 
 #endif // SIGNALPROCESSOR_H

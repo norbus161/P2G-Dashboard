@@ -14,17 +14,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
-add_subdirectory(3rdparty)
 find_package(Qt5SerialPort REQUIRED)
 find_package(Qt5Charts REQUIRED)
 
+add_subdirectory(3rdparty)
+
 add_executable(P2G-Dashboard
     src/main.cpp
+    src/types.h
+    src/constants.h
     src/radar.h
     src/radar.cpp
     src/signalprocessor.h
     src/signalprocessor.cpp
-    src/endpoint_type.h
     src/mainwindow.cpp
     src/mainwindow.h
     src/mainwindow.ui
@@ -40,3 +42,7 @@ target_link_libraries(P2G-Dashboard PRIVATE
     Qt${QT_VERSION_MAJOR}::SerialPort
     Qt${QT_VERSION_MAJOR}::Charts)
 
+if(UNIX)
+    target_include_directories(P2G-Dashboard PRIVATE 3rdparty/sigwatch/include)
+    target_link_libraries(P2G-Dashboard PRIVATE sigwatch)
+endif()

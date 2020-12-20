@@ -6,8 +6,8 @@
 #include <QAreaSeries>
 #include <QScatterSeries>
 
+#include "types.h"
 #include <EndpointRadarBase.h>
-#include <EndpointTargetDetection.h>
 
 
 QT_BEGIN_NAMESPACE
@@ -20,24 +20,23 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();    
+    ~MainWindow();
 
-    virtual void closeEvent(QCloseEvent *event) override;
     void initializeTimeDataPlot();
     void initializeRangeDataPlot();
     void initializeTargetDataPlot();
 
 public slots:
-    void updateTimeData(QList<QPointF> const & re_rx1, QList<QPointF> const & im_rx1,
-                         QList<QPointF> const & re_rx2, QList<QPointF> const & im_rx2);
-    void updateRangeData(QList<QPointF> const & rx1, QList<QPointF> const & rx2);
-    void updateTargetData(QVector<Target_Info_t> const & data);
+    void updateTimeData(DataPoints_t const & re_rx1, DataPoints_t const & im_rx1,
+                        DataPoints_t const & re_rx2, DataPoints_t const & im_rx2);
+    void updateRangeData(DataPoints_t const & rx1, DataPoints_t const & rx2);
+    void updateTargetData(Targets_t const & data);
 
 signals:
     void closed();
 
 private:
-    void calculateRangeMaxima(QList<QPointF> const & rx1);
+    void calculateRangeMaxima(DataPoints_t const & rx1);
 
 private:
     Ui::MainWindow *ui;

@@ -31,12 +31,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-    emit closed();
-    event->accept();
-}
-
 void MainWindow::initializeTimeDataPlot()
 {
     m_time_data_series_re_rx1 = new QLineSeries();
@@ -177,8 +171,8 @@ void MainWindow::initializeTargetDataPlot()
     ui->target_data->show();
 }
 
-void MainWindow::updateTimeData(QList<QPointF> const & re_rx1, QList<QPointF> const & im_rx1,
-                                 QList<QPointF> const & re_rx2, QList<QPointF> const & im_rx2)
+void MainWindow::updateTimeData(DataPoints_t const & re_rx1, DataPoints_t const & im_rx1,
+                                 DataPoints_t const & re_rx2, DataPoints_t const & im_rx2)
 {
     m_time_data_series_re_rx1->clear();
     m_time_data_series_im_rx1->clear();
@@ -191,7 +185,7 @@ void MainWindow::updateTimeData(QList<QPointF> const & re_rx1, QList<QPointF> co
     m_time_data_series_im_rx2->append(im_rx2);
 }
 
-void MainWindow::updateRangeData(QList<QPointF> const & rx1, QList<QPointF> const & rx2)
+void MainWindow::updateRangeData(DataPoints_t const & rx1, DataPoints_t const & rx2)
 {
     m_range_data_series_upper_rx1->clear();
     m_range_data_series_upper_rx2->clear();
@@ -201,7 +195,7 @@ void MainWindow::updateRangeData(QList<QPointF> const & rx1, QList<QPointF> cons
     calculateRangeMaxima(rx1);
 }
 
-void MainWindow::updateTargetData(const QVector<Target_Info_t> &data)
+void MainWindow::updateTargetData(const Targets_t &data)
 {
     m_target_data_series->clear();
 
@@ -209,7 +203,7 @@ void MainWindow::updateTargetData(const QVector<Target_Info_t> &data)
         m_target_data_series->append(QPointF(e.azimuth, e.radius / 100));
 }
 
-void MainWindow::calculateRangeMaxima(QList<QPointF> const & rx1)
+void MainWindow::calculateRangeMaxima(DataPoints_t const & rx1)
 {
     std::vector<float> data;
 

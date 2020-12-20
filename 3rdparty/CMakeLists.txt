@@ -1,3 +1,4 @@
 add_subdirectory(ComLib_C_Interface)
 add_subdirectory(dj_fft)
 add_subdirectory(Persistence1D)
+add_subdirectory(sigwatch)
