@@ -2,7 +2,6 @@
 #include "radar.h"
 #include "types.h"
 #include "constants.h"
-
 #ifdef __linux__
     #include "sigwatch.h"
 #endif
@@ -60,7 +59,9 @@ int main(int argc, char *argv[])
     QObject::connect(&r, &Radar::rangeDataChanged, &w, &MainWindow::updateRangeData);
     QObject::connect(&r, &Radar::targetDataChanged, &w, &MainWindow::updateTargetData);
     QObject::connect(t, &QThread::started, &r, &Radar::doMeasurement);
+#ifdef _WIN32
     QObject::connect(&w, &MainWindow::closed, &r, &Radar::disconnect, Qt::DirectConnection);
+#endif
 
     // Start the thread
     t->start();
