@@ -34,7 +34,7 @@ DataPoints_t SignalProcessor::calculateRangeData(const DataPoints_t &re, const D
     if (re.size() > 0 && re.size() == im.size())
     {
         setMeanValuesOfSignal(re, im);
-        generateComplex_tSignal(re, im);
+        generateComplexSignal(re, im);
         windowComplexSignal();
         calculateFft();
     }
@@ -63,7 +63,7 @@ void SignalProcessor::setMeanValuesOfSignal(const DataPoints_t &re, const DataPo
     m_im_mean = im_sum / SIGNAL_SAMPLE_SIZE;
 }
 
-void SignalProcessor::generateComplex_tSignal(const DataPoints_t &re, const DataPoints_t &im)
+void SignalProcessor::generateComplexSignal(const DataPoints_t &re, const DataPoints_t &im)
 {
     for (auto i = 0; i < SIGNAL_SAMPLE_SIZE; i++)
     {

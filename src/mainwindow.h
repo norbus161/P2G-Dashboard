@@ -22,6 +22,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+#ifdef _WIN32
+    virtual void closeEvent(QCloseEvent *event) override;
+#endif
     void initializeTimeDataPlot();
     void initializeRangeDataPlot();
     void initializeTargetDataPlot();

@@ -31,6 +31,14 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+#ifdef _WIN32
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    emit closed();
+    event->accept();
+}
+#endif
+
 void MainWindow::initializeTimeDataPlot()
 {
     m_time_data_series_re_rx1 = new QLineSeries();

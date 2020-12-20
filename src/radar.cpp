@@ -176,10 +176,13 @@ void Radar::doMeasurement()
 {
     static int counter = 0;
 
-    QMutexLocker locker(&m);
-
-    while(!m_shutdown)
+    while(true)
     {
+        m.lock();
+
+        if (m_shutdown)
+            break;
+
         qDebug() << "Radar base: get Frame: ";
         printStatusCodeInformation(ep_radar_base_get_frame_data(m_handle, m_endpoints[EndpointType_t::Base], 0));
         qDebug() << "Target detect: get Targets: ";
@@ -196,6 +199,7 @@ void Radar::doMeasurement()
 
         QThread::msleep(RADAR_MEASUREMENT_PAUSE_TIME);
     }
+    m.unlock();
 }
 
 void Radar::emitRangeDataSignal(const DataPoints_t &re_rx1, const DataPoints_t &im_rx1,

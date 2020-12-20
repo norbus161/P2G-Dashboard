@@ -13,7 +13,7 @@ public:
 private:
     void initialize();
     void setMeanValuesOfSignal(DataPoints_t const & re, DataPoints_t const & im);
-    void generateComplex_tSignal(DataPoints_t const & re, DataPoints_t const & im);
+    void generateComplexSignal(DataPoints_t const & re, DataPoints_t const & im);
     void generateHannWindow();
     void generateRangeVector();
     void windowComplexSignal();
