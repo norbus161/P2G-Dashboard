@@ -1,13 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "types.h"
+
+#include <EndpointRadarBase.h>
 #include <QMainWindow>
 #include <QLineSeries>
 #include <QAreaSeries>
 #include <QScatterSeries>
-
-#include "types.h"
-#include <EndpointRadarBase.h>
 
 
 QT_BEGIN_NAMESPACE

@@ -2,7 +2,6 @@
 #include "./ui_mainwindow.h"
 
 #include <persistence1d.hpp>
-
 #include <QFont>
 #include <QValueAxis>
 
