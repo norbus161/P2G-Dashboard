@@ -42,13 +42,13 @@ void MainWindow::initializeTimeDataPlot()
 {
     m_time_data_series_re_rx1 = new QLineSeries();
     m_time_data_series_im_rx1 = new QLineSeries();
-    m_time_data_series_re_rx1->setName("Inphase component antenna 1");
-    m_time_data_series_im_rx1->setName("Quadratur component antenna 1");
+    m_time_data_series_re_rx1->setName("Inphase signal<br>component antenna 1");
+    m_time_data_series_im_rx1->setName("Quadratur signal<br>component antenna 1");
 
     m_time_data_series_re_rx2 = new QLineSeries();
     m_time_data_series_im_rx2 = new QLineSeries();
-    m_time_data_series_re_rx2->setName("Inphase component antenna 2");
-    m_time_data_series_im_rx2->setName("Quadratur component antenna 2");
+    m_time_data_series_re_rx2->setName("Inphase signal<br>component antenna 2");
+    m_time_data_series_im_rx2->setName("Quadratur signal<br>component antenna 2");
 
     QChart *chart = new QChart();
     chart->setTheme(QChart::ChartThemeBlueCerulean);
@@ -179,7 +179,7 @@ void MainWindow::initializeTargetDataPlot()
 }
 
 void MainWindow::updateTimeData(DataPoints_t const & re_rx1, DataPoints_t const & im_rx1,
-                                 DataPoints_t const & re_rx2, DataPoints_t const & im_rx2)
+                                DataPoints_t const & re_rx2, DataPoints_t const & im_rx2)
 {
     m_time_data_series_re_rx1->clear();
     m_time_data_series_im_rx1->clear();
@@ -214,7 +214,7 @@ void MainWindow::calculateRangeMaxima(DataPoints_t const & rx1)
 {
     std::vector<float> data;
 
-    for (int i = 0; i < rx1.size(); i++)
+    for (auto i = 0; i < rx1.size(); i++)
         data.push_back(rx1[i].y());
 
     p1d::Persistence1D p;
@@ -226,7 +226,7 @@ void MainWindow::calculateRangeMaxima(DataPoints_t const & rx1)
     auto maximum = 0.0;
     m_range_data_maximum_rx1->clear();
 
-    for(std::vector<p1d::TPairedExtrema>::iterator it = extrema.begin(); it != extrema.end(); it++)
+    for(auto it = extrema.begin(); it != extrema.end(); it++)
     {
         auto x = rx1[(*it).MaxIndex].x();
         auto y = rx1[(*it).MaxIndex].y();

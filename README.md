@@ -51,7 +51,7 @@ make
 Linux: Set up the permissions for accessing the serial port:
 
 ```bash
-cd .. && sudo cp ./driver/udev/10-p2g-linux.rules /etc/udev/rules.d
+cd .. && sudo cp ./driver/udev/90-p2g-linux.rules /etc/udev/rules.d
 sudo udevadm control --reload
 sudo reboot -h now
 ```
@@ -70,8 +70,5 @@ Execute the application:
 - [ ] Polarplot: show visible angle of the radar within the polarplot
 - [ ] Polarplot: 180 degrees instead of 360 degrees
 - [ ] Create Ini-File to configure target detection, detection of extrema and arrangement of  layouts.
-- [x] **Create udev rule for serial port** 
-- [x] **Create installation guide**
 - [ ] **Refactor code**
-- [x] **Compile static linked qt release version for Ubuntu 18.04**
-- [x] **Deliver executable with install guide**
+
