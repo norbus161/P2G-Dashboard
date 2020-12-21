@@ -4,6 +4,7 @@
 #include "types.h"
 #include "signalprocessor.h"
 
+#include <persistence1d.hpp>
 #include <EndpointRadarBase.h>
 #include <EndpointTargetDetection.h>
 #include <QtSerialPort/QSerialPortInfo>
@@ -31,7 +32,8 @@ public slots:
 signals:
     void timeDataChanged(DataPoints_t const & re_rx1, DataPoints_t const & im_rx1,
                          DataPoints_t const & re_rx2, DataPoints_t const & im_rx2);
-    void rangeDataChanged(DataPoints_t const & rx1, DataPoints_t const & rx2);
+    void rangeDataChanged(DataPoints_t const & rx1, DataPoints_t const & rx2,
+                          DataPoints_t const & maxima, double const & max_y);
     void targetDataChanged(Targets_t const & data);
 
 private:
@@ -45,8 +47,8 @@ private:
     bool m_shutdown;
     QRecursiveMutex m;
     QMap<EndpointType_t, int> m_endpoints;
-    SignalProcessor m_signal_processor_antenna1;
-    SignalProcessor m_signal_processor_antenna2;
+    SignalProcessor m_signal_processor;
+    p1d::Persistence1D m_persistence;
 };
 
 #endif // RADAR_H

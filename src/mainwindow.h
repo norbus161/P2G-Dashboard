@@ -32,14 +32,12 @@ public:
 public slots:
     void updateTimeData(DataPoints_t const & re_rx1, DataPoints_t const & im_rx1,
                         DataPoints_t const & re_rx2, DataPoints_t const & im_rx2);
-    void updateRangeData(DataPoints_t const & rx1, DataPoints_t const & rx2);
+    void updateRangeData(DataPoints_t const & rx1, DataPoints_t const & rx2,
+                         DataPoints_t const & maxima, double const & max_y);
     void updateTargetData(Targets_t const & data);
 
 signals:
     void closed();
-
-private:
-    void calculateRangeMaxima(DataPoints_t const & rx1);
 
 private:
     Ui::MainWindow *ui;

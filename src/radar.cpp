@@ -21,6 +21,7 @@ constexpr auto LENGTH_SPLITTER = 50;
 // Callbacks
 void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const Frame_Info_t* frame_info);
 void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const  Target_Info_t* frame_info, uint8_t num_targets);
+void CbTemperature(void *context, int32_t handle, uint8_t endpoint, uint8_t temp_sensor, int32_t temperature);
 
 
 Radar::Radar(QObject *parent) : QObject(parent)
@@ -178,9 +179,8 @@ void Radar::doMeasurement()
         if (m_shutdown)
             break;
 
-        qDebug() << "Radar base: get Frame: ";
+        ep_radar_base_get_temperature(m_handle, m_endpoints[EndpointType_t::Base], 0);
         printStatusCodeInformation(ep_radar_base_get_frame_data(m_handle, m_endpoints[EndpointType_t::Base], 0));
-        qDebug() << "Target detect: get Targets: ";
         printStatusCodeInformation(ep_targetdetect_get_targets(m_handle, m_endpoints[EndpointType_t::TargetDetection]));
         m.unlock();
 
@@ -192,8 +192,35 @@ void Radar::doMeasurement()
 void Radar::emitRangeDataSignal(const DataPoints_t &re_rx1, const DataPoints_t &im_rx1,
                                 const DataPoints_t &re_rx2, const DataPoints_t &im_rx2)
 {
-    emit rangeDataChanged(m_signal_processor_antenna1.calculateRangeData(re_rx1, im_rx1),
-                          m_signal_processor_antenna2.calculateRangeData(re_rx2, im_rx2));
+
+    auto rx1 = m_signal_processor.calculateRangeData(re_rx1, im_rx1);
+    auto rx2 = m_signal_processor.calculateRangeData(re_rx2, im_rx2);
+
+    std::vector<float> data;
+
+    for (auto i = 0; i < rx1.size(); i++)
+        data.push_back(rx1[i].y());
+
+    m_persistence.RunPersistence(data);
+
+    std::vector<p1d::TPairedExtrema> extrema;
+    m_persistence.GetPairedExtrema(extrema, 0.01);
+
+    auto maximum = 0.0;
+    DataPoints_t maxima;
+
+    for(auto it = extrema.begin(); it != extrema.end(); it++)
+    {
+        auto x = rx1[(*it).MaxIndex].x();
+        auto y = rx1[(*it).MaxIndex].y();
+
+        maxima.append(QPointF(x, y));
+
+        if (y > maximum)
+            maximum = y;
+    }
+
+    emit rangeDataChanged(rx1, rx2, maxima, maximum);
 }
 
 void Radar::printSerialPortInformation(const QSerialPortInfo &info)
@@ -235,6 +262,7 @@ void Radar::setCallbackFunctions()
 {
     ep_radar_base_set_callback_data_frame(CbReceivedFrameData, this);
     ep_targetdetect_set_callback_target_processing(CbReceivedTargetData, this);
+    ep_radar_base_set_callback_temperature(CbTemperature, this);
 }
 
 void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const Frame_Info_t* frame_info)
@@ -269,7 +297,7 @@ void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const 
     }
 
     emit ((Radar*)context)->timeDataChanged(re_rx1, im_rx1, re_rx2, im_rx2);
-    emit ((Radar*)context)->emitRangeDataSignal(re_rx1, im_rx1, re_rx2, im_rx2);
+    ((Radar*)context)->emitRangeDataSignal(re_rx1, im_rx1, re_rx2, im_rx2);
 }
 
 void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const  Target_Info_t* target_info, uint8_t num_targets)
@@ -282,4 +310,9 @@ void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const
     std::copy(target_info, target_info + num_targets, std::back_inserter(vec));
 
     emit ((Radar*)context)->targetDataChanged(vec);
+}
+
+void CbTemperature(void *context, int32_t handle, uint8_t endpoint, uint8_t temp_sensor, int32_t temperature)
+{
+    qDebug() << "Temperature: " << temperature/1000 << "°C";
 }

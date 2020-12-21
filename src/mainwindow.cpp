@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-#include <persistence1d.hpp>
 #include <QFont>
 #include <QValueAxis>
 
@@ -192,14 +191,17 @@ void MainWindow::updateTimeData(DataPoints_t const & re_rx1, DataPoints_t const 
     m_time_data_series_im_rx2->append(im_rx2);
 }
 
-void MainWindow::updateRangeData(DataPoints_t const & rx1, DataPoints_t const & rx2)
+void MainWindow::updateRangeData(DataPoints_t const & rx1, DataPoints_t const & rx2,
+                                 DataPoints_t const & maxima, double const & max_y)
 {
     m_range_data_series_upper_rx1->clear();
     m_range_data_series_upper_rx2->clear();
+    m_range_data_maximum_rx1->clear();
     m_range_data_series_upper_rx1->append(rx1);
     m_range_data_series_upper_rx2->append(rx2);
+    m_range_data_maximum_rx1->append(maxima);
 
-    calculateRangeMaxima(rx1);
+    static_cast<QValueAxis*>(ui->range_data->chart()->axes(Qt::Vertical).back())->setMax(max_y + 0.2);
 }
 
 void MainWindow::updateTargetData(const Targets_t &data)
@@ -209,33 +211,3 @@ void MainWindow::updateTargetData(const Targets_t &data)
     for (auto & e: data)
         m_target_data_series->append(QPointF(e.azimuth, e.radius / 100));
 }
-
-void MainWindow::calculateRangeMaxima(DataPoints_t const & rx1)
-{
-    std::vector<float> data;
-
-    for (auto i = 0; i < rx1.size(); i++)
-        data.push_back(rx1[i].y());
-
-    p1d::Persistence1D p;
-    p.RunPersistence(data);
-
-    std::vector<p1d::TPairedExtrema> extrema;
-    p.GetPairedExtrema(extrema, 0.01);
-
-    auto maximum = 0.0;
-    m_range_data_maximum_rx1->clear();
-
-    for(auto it = extrema.begin(); it != extrema.end(); it++)
-    {
-        auto x = rx1[(*it).MaxIndex].x();
-        auto y = rx1[(*it).MaxIndex].y();
-
-        m_range_data_maximum_rx1->append(QPointF(x, y));
-
-        if (y > maximum)
-            maximum = y;
-    }
-    static_cast<QValueAxis*>(ui->range_data->chart()->axes(Qt::Vertical).back())->setMax(maximum + 0.2);
-}
-
