@@ -16,6 +16,7 @@
 
 // Constants
 constexpr auto STATE_RADAR_DISCONNECTED = -1;
+constexpr auto LENGTH_SPLITTER = 50;
 
 // Callbacks
 void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const Frame_Info_t* frame_info);
@@ -171,12 +172,9 @@ bool Radar::setAutomaticFrameTrigger(bool enable, const EndpointType_t &endpoint
 
 void Radar::doMeasurement()
 {
-    static int counter = 0;
-
     while(true)
     {
         m.lock();
-
         if (m_shutdown)
             break;
 
@@ -184,14 +182,6 @@ void Radar::doMeasurement()
         printStatusCodeInformation(ep_radar_base_get_frame_data(m_handle, m_endpoints[EndpointType_t::Base], 0));
         qDebug() << "Target detect: get Targets: ";
         printStatusCodeInformation(ep_targetdetect_get_targets(m_handle, m_endpoints[EndpointType_t::TargetDetection]));
-
-        if(counter == RADAR_MEASUREMENT_AMOUNT_OF_RESET_CYCLES)
-        {
-            disconnect();
-            connect();
-            counter = 0;
-        }
-        counter++;
         m.unlock();
 
         QThread::msleep(RADAR_MEASUREMENT_PAUSE_TIME);
@@ -208,7 +198,7 @@ void Radar::emitRangeDataSignal(const DataPoints_t &re_rx1, const DataPoints_t &
 
 void Radar::printSerialPortInformation(const QSerialPortInfo &info)
 {
-    qDebug() << "-------------------------------";
+    qDebug() << QString("-").repeated(LENGTH_SPLITTER);
     QString s = QObject::tr("Port: ") + info.portName() + "\n"
                 + QObject::tr("Location: ") + info.systemLocation() + "\n"
                 + QObject::tr("Description: ") + info.description() + "\n"
@@ -222,12 +212,16 @@ void Radar::printSerialPortInformation(const QSerialPortInfo &info)
 
 void Radar::printFirmwareInformation()
 {
-    qDebug() << "-------------------------------";
+    qDebug() << QString("-").repeated(LENGTH_SPLITTER);
     Firmware_Information_t info;
     protocol_get_firmware_information(m_handle, &info);
 
-    QString s = QObject::tr("Description: ") + info.description + "\n"
-                + QObject::tr("Firmware: ") + QString::number(info.version_major) + "." + QString::number(info.version_minor);
+    QString s = QObject::tr("Description: ")
+                + info.description + "\n"
+                + QObject::tr("Firmware: ")
+                + QString::number(info.version_major) + "."
+                + QString::number(info.version_minor) + "."
+                + QString::number(info.version_build);
 
     qDebug().noquote()  << s;
 }
@@ -275,7 +269,7 @@ void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const 
     }
 
     emit ((Radar*)context)->timeDataChanged(re_rx1, im_rx1, re_rx2, im_rx2);
-    ((Radar*)context)->emitRangeDataSignal(re_rx1, im_rx1, re_rx2, im_rx2);
+    emit ((Radar*)context)->emitRangeDataSignal(re_rx1, im_rx1, re_rx2, im_rx2);
 }
 
 void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const  Target_Info_t* target_info, uint8_t num_targets)
@@ -284,7 +278,6 @@ void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const
         return;
 
     Targets_t vec;
-
     vec.reserve(num_targets);
     std::copy(target_info, target_info + num_targets, std::back_inserter(vec));
 
