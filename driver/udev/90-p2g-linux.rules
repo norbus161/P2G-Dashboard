@@ -4,4 +4,5 @@
 # Put this file in /etc/udev/rules.d/
 
 # Position2Go Radar
-SUBSYSTEM=="tty", ATTRS{idVendor}=="058b", ATTRS{idProduct}=="0058", MODE="0666"
+ATTRS{idVendor}=="058b" ATTRS{idProduct}=="0058", ENV{ID_MM_DEVICE_IGNORE}="1", ENV{ID_MM_PORT_IGNORE}="1"
+KERNEL=="ttyACM*", ATTRS{idVendor}=="058b", ATTRS{idProduct}=="0058", MODE="0666"
