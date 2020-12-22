@@ -180,8 +180,8 @@ void Radar::doMeasurement()
             break;
 
         ep_radar_base_get_temperature(m_handle, m_endpoints[EndpointType_t::Base], 0);
-        printStatusCodeInformation(ep_radar_base_get_frame_data(m_handle, m_endpoints[EndpointType_t::Base], 0));
-        printStatusCodeInformation(ep_targetdetect_get_targets(m_handle, m_endpoints[EndpointType_t::TargetDetection]));
+        ep_radar_base_get_frame_data(m_handle, m_endpoints[EndpointType_t::Base], 0);
+        ep_targetdetect_get_targets(m_handle, m_endpoints[EndpointType_t::TargetDetection]);
         m.unlock();
 
         QThread::msleep(RADAR_MEASUREMENT_PAUSE_TIME);
