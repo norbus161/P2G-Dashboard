@@ -16,7 +16,6 @@
 
 // Constants
 constexpr auto STATE_RADAR_DISCONNECTED = -1;
-constexpr auto LENGTH_SPLITTER = 50;
 
 // Callbacks
 void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const Frame_Info_t* frame_info);
@@ -37,7 +36,7 @@ bool Radar::connect()
 {
     QMutexLocker locker(&m);
 
-    qDebug() << "Trying to connect to radar...";
+    qInfo() << "Trying to connect to radar...";
 
     const auto infos = QSerialPortInfo::availablePorts();
     for (const QSerialPortInfo &info : infos)
@@ -50,7 +49,7 @@ bool Radar::connect()
 
         if (m_handle >= 0)
         {
-            qDebug() << "Device found...";
+            qInfo() << "Device found.";
             printSerialPortInformation(info);
             printFirmwareInformation();
             setCallbackFunctions();
@@ -59,7 +58,7 @@ bool Radar::connect()
         }
     }
 
-    qDebug() << "No devices found...";
+    qInfo() << "No devices found...";
 
     return false;
 }
@@ -76,7 +75,7 @@ void Radar::disconnect()
     if (m_handle >= 0)
         protocol_disconnect(m_handle);
 
-    qDebug() << "Device succesfully disconnected...";
+    qInfo() << "Device succesfully disconnected.";
 }
 
 bool Radar::addEndpoint(const EndpointType_t &endpoint)
@@ -225,37 +224,23 @@ void Radar::emitRangeDataSignal(const DataPoints_t &re_rx1, const DataPoints_t &
 
 void Radar::printSerialPortInformation(const QSerialPortInfo &info)
 {
-    qDebug() << QString("-").repeated(LENGTH_SPLITTER);
-    QString s = QObject::tr("Port: ") + info.portName() + "\n"
-                + QObject::tr("Location: ") + info.systemLocation() + "\n"
-                + QObject::tr("Description: ") + info.description() + "\n"
-                + QObject::tr("Manufacturer: ") + info.manufacturer() + "\n"
-                + QObject::tr("Serial number: ") + info.serialNumber() + "\n"
-                + QObject::tr("Vendor Identifier: ") + (info.hasVendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString()) + "\n"
-                + QObject::tr("Product Identifier: ") + (info.hasProductIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
-
-    qDebug().noquote()  << s;
+    qInfo() << "Port: " <<  info.portName();;
+    qInfo() << "Vendor Identifier: " << (info.hasVendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString());
+    qInfo() << "Product Identifier: " << (info.hasProductIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 }
 
 void Radar::printFirmwareInformation()
 {
-    qDebug() << QString("-").repeated(LENGTH_SPLITTER);
     Firmware_Information_t info;
     protocol_get_firmware_information(m_handle, &info);
 
-    QString s = QObject::tr("Description: ")
-                + info.description + "\n"
-                + QObject::tr("Firmware: ")
-                + QString::number(info.version_major) + "."
-                + QString::number(info.version_minor) + "."
-                + QString::number(info.version_build);
-
-    qDebug().noquote()  << s;
+    qInfo() << "Description: " << info.description;
+    qInfo() << "Firmware: " << QString("%1.%2.%3").arg(info.version_major).arg(info.version_minor).arg(info.version_build);
 }
 
 void Radar::printStatusCodeInformation(int code)
 {
-    qDebug() << "Status: " << protocol_get_status_code_description(m_handle, code);
+    qInfo() << "Status: " << protocol_get_status_code_description(m_handle, code);
 }
 
 void Radar::setCallbackFunctions()
@@ -265,7 +250,7 @@ void Radar::setCallbackFunctions()
     ep_radar_base_set_callback_temperature(CbTemperature, this);
 }
 
-void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const Frame_Info_t* frame_info)
+void CbReceivedFrameData(void* context, int32_t, uint8_t, const Frame_Info_t* frame_info)
 {
     if (frame_info == nullptr)
         return;
@@ -300,7 +285,7 @@ void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const 
     ((Radar*)context)->emitRangeDataSignal(re_rx1, im_rx1, re_rx2, im_rx2);
 }
 
-void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const  Target_Info_t* target_info, uint8_t num_targets)
+void CbReceivedTargetData(void* context, int32_t, uint8_t, const  Target_Info_t* target_info, uint8_t num_targets)
 {
     if (target_info == nullptr)
         return;
@@ -312,7 +297,7 @@ void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const
     emit ((Radar*)context)->targetDataChanged(vec);
 }
 
-void CbTemperature(void *context, int32_t handle, uint8_t endpoint, uint8_t temp_sensor, int32_t temperature)
+void CbTemperature(void *, int32_t, uint8_t, uint8_t, int32_t temperature)
 {
-    qDebug() << "Temperature: " << temperature/1000 << "°C";
+    //qInfo() << "Temperature: " << temperature/1000 << "°C";
 }

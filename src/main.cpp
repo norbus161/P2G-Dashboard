@@ -9,12 +9,94 @@
 #include <QApplication>
 #include <QThread>
 #include <QDebug>
+#include <QTime>
+
+void messageHandler(QtMsgType type, QMessageLogContext const &, QString const & msg)
+{
+    switch (type)
+    {
+        case QtDebugMsg:
+            fprintf(stdout, "%s [DEBUG]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
+            fflush(stdout);
+            break;
+        case QtInfoMsg:
+            fprintf(stdout, "%s [INFO]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
+            fflush(stdout);
+            break;
+        case QtWarningMsg:
+            fprintf(stderr, "%s [WARNING]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
+            break;
+        case QtCriticalMsg:
+            fprintf(stderr, "%s [CRITICAL]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
+            break;
+        case QtFatalMsg:
+            fprintf(stderr, "%s [FATAL]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
+            break;
+    }
+}
+
+bool tryConnect(Radar & r)
+{
+    auto attempts = 0;
+    while (attempts <  STARTUP_CONNECTION_ATTEMPS)
+    {
+        attempts++;
+        qInfo() << "Connection attempt" << "(" << attempts << "/" << STARTUP_CONNECTION_ATTEMPS << ")";
+        if (r.connect())
+            break;
+        QThread::msleep(STARTUP_CONNECTION_PAUSE_TIME);
+    }
+
+    if (attempts == STARTUP_CONNECTION_ATTEMPS)
+    {
+        qWarning() << "Aborted: Failed to connect to radar sensor. ";
+        return false;
+    }
+    return true;
+}
+
+bool tryAddingEndpoints(Radar & r)
+{
+    qInfo() << "Trying to add base endpoint...";
+    if (!r.addEndpoint(EndpointType_t::Base))
+    {
+        qCritical() << "Error: Failed to add base endpoint. ";
+        return false;
+    }
+    qInfo() << "Successfully added base endpoint.";
+
+    qInfo() << "Trying to add target detection endpoint...";
+    if (!r.addEndpoint(EndpointType_t::TargetDetection))
+    {
+        qCritical() << "Error: Failed to add target detection endpoint. ";
+        return false;
+    }
+    qInfo() << "Successfully added target detection endpoint.";
+
+    return true;
+}
+
+bool trySettingUpFrameTrigger(Radar & r)
+{
+    qInfo() << "Trying to diable automatic frame trigger for base endpoint...";
+    if (!r.setAutomaticFrameTrigger(false, EndpointType_t::Base, 0))
+    {
+        qCritical() << "Error: Failed to disable frame trigger for base endpoint. ";
+        return false;
+    }
+    qInfo() << "Successfully disabled frame trigger for base endpoint.";
+
+    return true;
+}
 
 
 int main(int argc, char *argv[])
 {
+    // Register the message handler within the application
+    qInstallMessageHandler(messageHandler);
     QApplication a(argc, argv);
 
+    // Signal watch for linux to catch all kinds of termination, so the radar can get into a defined state
 #ifdef __linux__
     UnixSignalWatcher sigwatch;
     sigwatch.watchForSignal(SIGINT);
@@ -27,34 +109,24 @@ int main(int argc, char *argv[])
     MainWindow w;
     Radar r;
 
-    auto attempts = STARTUP_CONNECTION_ATTEMPS;
-    while (attempts > 0 && !r.connect())
-    {
-        QThread::msleep(STARTUP_CONNECTION_PAUSE_TIME);
-        attempts--;
-    }
-
-    if (attempts == 0)
-    {
-        qCritical() << "Aborted: Failed to connect to radar sensor. ";
+    // Setup the radar before we move it into own thread
+    if (!tryConnect(r))
         return ERROR_STARTUP_CONNECTION_FAILED;
-    }
 
-    // Add the necassery endpoints
-    qDebug() << "Adding base endpoint: " << r.addEndpoint(EndpointType_t::Base);
-    qDebug() << "Adding target detection endpoint: " << r.addEndpoint(EndpointType_t::TargetDetection);
+    if (!tryAddingEndpoints(r))
+        return ERROR_STARTUP_ADDING_ENDPOINTS_FAILED;
 
-    // Disable automatic frame trigger
-    r.setAutomaticFrameTrigger(false, EndpointType_t::Base, 0);
-    r.setAutomaticFrameTrigger(false, EndpointType_t::TargetDetection, 0);
+    if (!trySettingUpFrameTrigger(r))
+        return ERROR_STARTUP_FRAMETRIGGER_SETUP_FAILED;
 
-    // Move the radar object into another thread, so the gui thread won't block
+
+    // Move the radar object into another thread, so the main thread with the gui won't block
     QThread* t = new QThread();
     r.moveToThread(t);
 
     // Signal slot connections
-    qRegisterMetaType<DataPoints_t>("DataPoints_t");
     qRegisterMetaType<Targets_t>("Targets_t");
+    qRegisterMetaType<DataPoints_t>("DataPoints_t");
     QObject::connect(&r, &Radar::timeDataChanged, &w, &MainWindow::updateTimeData);
     QObject::connect(&r, &Radar::rangeDataChanged, &w, &MainWindow::updateRangeData);
     QObject::connect(&r, &Radar::targetDataChanged, &w, &MainWindow::updateTargetData);
