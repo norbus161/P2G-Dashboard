@@ -2,6 +2,9 @@
 #include "radar.h"
 #include "types.h"
 #include "constants.h"
+#include "plots/timedataplot.h"
+#include "plots/rangedataplot.h"
+#include "plots/targetdataplot.h"
 #ifdef __linux__
     #include "sigwatch.h"
 #endif
@@ -106,16 +109,21 @@ int main(int argc, char *argv[])
     QObject::connect(&sigwatch, SIGNAL(unixSignal(int)), &a, SLOT(quit()));
 #endif
 
+    // Setup graphical user interface
     MainWindow w;
-    Radar r;
+    TimeDataPlot timedata;
+    RangeDataPlot rangedata;
+    TargetDataPlot targetdata;
+    w.setPlot(&timedata, PlotType_t::TimeData);
+    w.setPlot(&rangedata, PlotType_t::RangeData);
+    w.setPlot(&targetdata, PlotType_t::TargetData);
 
     // Setup the radar before we move it into own thread
+    Radar r;
     if (!tryConnect(r))
         return ERROR_STARTUP_CONNECTION_FAILED;
-
     if (!tryAddingEndpoints(r))
         return ERROR_STARTUP_ADDING_ENDPOINTS_FAILED;
-
     if (!trySettingUpFrameTrigger(r))
         return ERROR_STARTUP_FRAMETRIGGER_SETUP_FAILED;
 
@@ -127,9 +135,9 @@ int main(int argc, char *argv[])
     // Signal slot connections
     qRegisterMetaType<Targets_t>("Targets_t");
     qRegisterMetaType<DataPoints_t>("DataPoints_t");
-    QObject::connect(&r, &Radar::timeDataChanged, &w, &MainWindow::updateTimeData);
-    QObject::connect(&r, &Radar::rangeDataChanged, &w, &MainWindow::updateRangeData);
-    QObject::connect(&r, &Radar::targetDataChanged, &w, &MainWindow::updateTargetData);
+    QObject::connect(&r, &Radar::timeDataChanged, &timedata, &TimeDataPlot::update);
+    QObject::connect(&r, &Radar::rangeDataChanged, &rangedata, &RangeDataPlot::update);
+    QObject::connect(&r, &Radar::targetDataChanged, &targetdata, &TargetDataPlot::update);
     QObject::connect(t, &QThread::started, &r, &Radar::doMeasurement);
 #ifdef _WIN32
     QObject::connect(&w, &MainWindow::closed, &r, &Radar::disconnect, Qt::DirectConnection);

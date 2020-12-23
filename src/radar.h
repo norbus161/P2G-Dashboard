@@ -16,6 +16,7 @@
 class Radar : public QObject
 {
     Q_OBJECT
+
 public:
     explicit Radar(QObject *parent = nullptr);
     ~Radar();

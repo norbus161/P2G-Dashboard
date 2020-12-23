@@ -30,6 +30,15 @@ add_executable(P2G-Dashboard
     src/mainwindow.cpp
     src/mainwindow.h
     src/mainwindow.ui
+    src/settings.cpp
+    src/settings.h
+    src/settings.ui
+    src/plots/timedataplot.h
+    src/plots/timedataplot.cpp
+    src/plots/rangedataplot.h
+    src/plots/rangedataplot.cpp
+    src/plots/targetdataplot.h
+    src/plots/targetdataplot.cpp
 )
 
 target_include_directories(P2G-Dashboard PRIVATE 3rdparty/ComLib_C_Interface/include)

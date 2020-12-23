@@ -15,6 +15,13 @@ using Complex_t = std::complex<double>;
 using ComplexVec_t = std::vector<Complex_t>;
 
 
+enum class PlotType_t
+{
+    TimeData,
+    RangeData,
+    TargetData
+};
+
 enum class EndpointType_t
 {
     Calibration,
