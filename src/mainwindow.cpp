@@ -4,11 +4,20 @@
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    m_status = nullptr;
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::setStatus(Status *status)
+{
+    if (status == nullptr)
+        return;
+
+    m_status = status;
 }
 
 void MainWindow::setPlot(QChart *plot, PlotType_t type)
@@ -35,6 +44,14 @@ void MainWindow::setPlot(QChart *plot, PlotType_t type)
     v->chart()->layout()->setContentsMargins(0, 0, 0, 0);
     v->chart()->setBackgroundRoundness(0);
     v->show();
+}
+
+void MainWindow::updateStatus()
+{
+    if (m_status == nullptr)
+        return;
+
+    ui->statusBar->showMessage(m_status->get());
 }
 
 #ifdef _WIN32

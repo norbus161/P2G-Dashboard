@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "types.h"
+#include "status.h"
 
 #include <EndpointRadarBase.h>
 #include <QMainWindow>
@@ -20,7 +21,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void setStatus(Status *status);
     void setPlot(QtCharts::QChart *plot, PlotType_t type);
+
+public slots:
+    void updateStatus();
 
 #ifdef _WIN32
     virtual void closeEvent(QCloseEvent *event) override;
@@ -31,5 +36,6 @@ signals:
 
 private:
     Ui::MainWindow *ui;
+    Status * m_status;
 };
 #endif // MAINWINDOW_H

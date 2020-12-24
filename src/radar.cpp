@@ -10,7 +10,6 @@
 #include <EndpointRadarFmcw.h>
 #include <EndpointRadarIndustrial.h>
 #include <EndpointRadarP2G.h>
-#include <Protocol.h>
 #include <QDebug>
 #include <QThread>
 
@@ -50,6 +49,7 @@ bool Radar::connect()
         if (m_handle >= 0)
         {
             qInfo() << "Device found.";
+            emit connectionChanged(true);
             printSerialPortInformation(info);
             printFirmwareInformation();
             setCallbackFunctions();
@@ -75,6 +75,7 @@ void Radar::disconnect()
     if (m_handle >= 0)
         protocol_disconnect(m_handle);
 
+    emit connectionChanged(false);
     qInfo() << "Device succesfully disconnected.";
 }
 
@@ -224,9 +225,10 @@ void Radar::emitRangeDataSignal(const DataPoints_t &re_rx1, const DataPoints_t &
 
 void Radar::printSerialPortInformation(const QSerialPortInfo &info)
 {
-    qInfo() << "Port: " <<  info.portName();;
+    qInfo() << "Port: " <<  info.portName();
     qInfo() << "Vendor Identifier: " << (info.hasVendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString());
     qInfo() << "Product Identifier: " << (info.hasProductIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
+    emit serialPortChanged(info.portName());
 }
 
 void Radar::printFirmwareInformation()
@@ -234,6 +236,7 @@ void Radar::printFirmwareInformation()
     Firmware_Information_t info;
     protocol_get_firmware_information(m_handle, &info);
 
+    emit firmwareInformationChanged(info);
     qInfo() << "Description: " << info.description;
     qInfo() << "Firmware: " << QString("%1.%2.%3").arg(info.version_major).arg(info.version_minor).arg(info.version_build);
 }
@@ -245,6 +248,8 @@ void Radar::printStatusCodeInformation(int code)
 
 void Radar::setCallbackFunctions()
 {
+    qInfo() << "Setting callback functions...";
+
     ep_radar_base_set_callback_data_frame(CbReceivedFrameData, this);
     ep_targetdetect_set_callback_target_processing(CbReceivedTargetData, this);
     ep_radar_base_set_callback_temperature(CbTemperature, this);
@@ -297,7 +302,12 @@ void CbReceivedTargetData(void* context, int32_t, uint8_t, const  Target_Info_t*
     emit ((Radar*)context)->targetDataChanged(vec);
 }
 
-void CbTemperature(void *, int32_t, uint8_t, uint8_t, int32_t temperature)
+void CbTemperature(void * context, int32_t, uint8_t, uint8_t, int32_t temperature)
 {
-    //qInfo() << "Temperature: " << temperature/1000 << "°C";
+    if (temperature <= 0)
+        return;
+
+    auto temp = QString::number(temperature/1000.0,'f',2);
+    qInfo() << "Temperature: " << temp<< "degrees";
+    emit ((Radar*)context)->temperatureChanged(temp);
 }

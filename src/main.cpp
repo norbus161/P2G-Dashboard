@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "radar.h"
+#include "status.h"
 #include "types.h"
 #include "constants.h"
 #include "plots/timedataplot.h"
@@ -109,17 +110,35 @@ int main(int argc, char *argv[])
     QObject::connect(&sigwatch, SIGNAL(unixSignal(int)), &a, SLOT(quit()));
 #endif
 
-    // Setup graphical user interface
+    // Initiate all variables
+    Radar r;
     MainWindow w;
+    Status s;
     TimeDataPlot timedata;
     RangeDataPlot rangedata;
     TargetDataPlot targetdata;
+
+    // Setup the Mainwindow
+    w.setStatus(&s);
     w.setPlot(&timedata, PlotType_t::TimeData);
     w.setPlot(&rangedata, PlotType_t::RangeData);
     w.setPlot(&targetdata, PlotType_t::TargetData);
 
-    // Setup the radar before we move it into own thread
-    Radar r;
+    // Some connection for the statusbar
+    QObject::connect(&r, &Radar::connectionChanged, &s, &Status::updateConnection);
+    QObject::connect(&r, &Radar::firmwareInformationChanged, &s, &Status::updateFirmwareInformation);
+    QObject::connect(&r, &Radar::temperatureChanged, &s, &Status::updateTemperature);
+    QObject::connect(&r, &Radar::serialPortChanged, &s, &Status::updateSerialPort);
+    QObject::connect(&s, &Status::changed, &w, &MainWindow::updateStatus);
+
+    // Some connections for the plots
+    qRegisterMetaType<Targets_t>("Targets_t");
+    qRegisterMetaType<DataPoints_t>("DataPoints_t");
+    QObject::connect(&r, &Radar::timeDataChanged, &timedata, &TimeDataPlot::update);
+    QObject::connect(&r, &Radar::rangeDataChanged, &rangedata, &RangeDataPlot::update);
+    QObject::connect(&r, &Radar::targetDataChanged, &targetdata, &TargetDataPlot::update);
+
+    // Try to setup the radar sensor
     if (!tryConnect(r))
         return ERROR_STARTUP_CONNECTION_FAILED;
     if (!tryAddingEndpoints(r))
@@ -127,17 +146,11 @@ int main(int argc, char *argv[])
     if (!trySettingUpFrameTrigger(r))
         return ERROR_STARTUP_FRAMETRIGGER_SETUP_FAILED;
 
-
     // Move the radar object into another thread, so the main thread with the gui won't block
     QThread* t = new QThread();
     r.moveToThread(t);
 
-    // Signal slot connections
-    qRegisterMetaType<Targets_t>("Targets_t");
-    qRegisterMetaType<DataPoints_t>("DataPoints_t");
-    QObject::connect(&r, &Radar::timeDataChanged, &timedata, &TimeDataPlot::update);
-    QObject::connect(&r, &Radar::rangeDataChanged, &rangedata, &RangeDataPlot::update);
-    QObject::connect(&r, &Radar::targetDataChanged, &targetdata, &TargetDataPlot::update);
+    // Some more connections
     QObject::connect(t, &QThread::started, &r, &Radar::doMeasurement);
 #ifdef _WIN32
     QObject::connect(&w, &MainWindow::closed, &r, &Radar::disconnect, Qt::DirectConnection);

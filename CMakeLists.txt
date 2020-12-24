@@ -23,6 +23,8 @@ add_executable(P2G-Dashboard
     src/main.cpp
     src/types.h
     src/constants.h
+    src/status.h
+    src/status.cpp
     src/radar.h
     src/radar.cpp
     src/signalprocessor.h
@@ -30,9 +32,6 @@ add_executable(P2G-Dashboard
     src/mainwindow.cpp
     src/mainwindow.h
     src/mainwindow.ui
-    src/settings.cpp
-    src/settings.h
-    src/settings.ui
     src/plots/timedataplot.h
     src/plots/timedataplot.cpp
     src/plots/rangedataplot.h
