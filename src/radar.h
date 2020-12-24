@@ -38,7 +38,7 @@ signals:
     void rangeDataChanged(DataPoints_t const & rx1, DataPoints_t const & rx2,
                           DataPoints_t const & maxima, double const & max_y);
     void targetDataChanged(Targets_t const & data);
-    void firmwareInformationChanged(Firmware_Information_t const & info);
+    void firmwareInformationChanged(QString const & description, QString const & version);
     void serialPortChanged(QString const & port);
     void temperatureChanged(QString const & temperature);
     void connectionChanged(bool connected);

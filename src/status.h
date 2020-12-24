@@ -3,7 +3,6 @@
 
 #include "Protocol.h"
 
-#include <QString>
 #include <QObject>
 
 class Status : public QObject
@@ -15,7 +14,7 @@ public:
     QString get();
 
 public slots:
-    void updateFirmwareInformation(Firmware_Information_t const & info);
+    void updateFirmwareInformation(QString const & description, QString const & version);
     void updateSerialPort(QString const & port);
     void updateTemperature(QString const & temperature);
     void updateConnection(bool connected);
@@ -24,7 +23,8 @@ signals:
     void changed();
 
 private:
-    Firmware_Information_t m_firmware_info;
+    QString m_firmware_description;
+    QString m_firmware_version;
     QString m_serial_port;
     QString m_temperature;
     bool m_connection_state;

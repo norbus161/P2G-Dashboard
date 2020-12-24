@@ -2,15 +2,17 @@
 
 Status::Status(QObject *parent) : QObject(parent)
 {
-    m_firmware_info = {};
+    m_firmware_description = "";
+    m_firmware_version = "";
     m_serial_port = "";
-    m_temperature = 0.0;
+    m_temperature = "";
     m_connection_state = false;
 }
 
-void Status::updateFirmwareInformation(const Firmware_Information_t &info)
+void Status::updateFirmwareInformation(QString const & description, QString const & version)
 {
-    m_firmware_info = info;
+    m_firmware_description = description;
+    m_firmware_version = version;
     emit changed();
 }
 
@@ -37,14 +39,15 @@ QString Status::get()
     QString msg = "Status: ";
     if (!m_connection_state)
     {
-        msg += "Disconnected";
+        msg.append("Disconnected");
     }
     else
     {
-        auto t = QString(m_firmware_info.description);
-        auto f = QString("%1.%2.%3").arg(m_firmware_info.version_major).arg(m_firmware_info.version_minor).arg(m_firmware_info.version_build);
-        auto s = QString("Connected  |  Serial port: %1  |  Description: %2  |  Firmware: v%3  |  Temperature: %4°C").arg(m_serial_port).arg(t).arg(f).arg(m_temperature);
-        msg.append(s);
+        msg.append(QString("Connected  |  Serial port: %1  |  Description: %2  |  Firmware: v%3  |  Temperature: %4°C")
+                    .arg(m_serial_port)
+                    .arg(m_firmware_description)
+                    .arg(m_firmware_version)
+                    .arg(m_temperature));
     }
     return msg;
 }

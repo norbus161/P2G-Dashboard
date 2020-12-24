@@ -236,9 +236,12 @@ void Radar::printFirmwareInformation()
     Firmware_Information_t info;
     protocol_get_firmware_information(m_handle, &info);
 
-    emit firmwareInformationChanged(info);
-    qInfo() << "Description: " << info.description;
-    qInfo() << "Firmware: " << QString("%1.%2.%3").arg(info.version_major).arg(info.version_minor).arg(info.version_build);
+    QString description = info.description;
+    QString version = QString("%1.%2.%3").arg(info.version_major).arg(info.version_minor).arg(info.version_build);
+
+    qInfo() << "Description: " << description;
+    qInfo() << "Firmware: " << version;
+    emit firmwareInformationChanged(description, version);
 }
 
 void Radar::printStatusCodeInformation(int code)
