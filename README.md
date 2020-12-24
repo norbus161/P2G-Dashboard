@@ -67,8 +67,9 @@ Execute the application:
 ### Todos
 
 - [ ] Rangeplot: show maxima labels only for the antenna (1 OR 2) with global maxima
-- [ ] Polarplot: show visible angle of the radar within the polarplot
-- [ ] Polarplot: 180 degrees instead of 360 degrees
+- [ ] Add labels with speed and target id to target plot
+- [ ] Add exception handling to radar thread
+- [ ] Add QDialog to change Setting while running
 - [ ] Create Ini-File to configure target detection, detection of extrema and arrangement of  layouts.
 - [ ] **Refactor code**
 
