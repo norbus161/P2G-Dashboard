@@ -1,22 +1,23 @@
-#ifndef RANGEDATAPLOT_H
-#define RANGEDATAPLOT_H
+#ifndef RANGEDATACHART_H
+#define RANGEDATACHART_H
 
-#include "src/types.h"
+#include <misc/types.h>
 
 #include <QtCharts>
 
 using namespace QtCharts;
 
-class RangeDataPlot : public QChart
+class RangeDataChart : public QChart
 {
     Q_OBJECT
 
 public:
-    RangeDataPlot();
+    RangeDataChart();
 
 public slots:
     void update(DataPoints_t const & rx1, DataPoints_t const & rx2,
                 DataPoints_t const & maxima, double const & max_y);
+    void setChartTheme(ChartTheme theme);
 private:
     void initialize();
 
@@ -28,4 +29,4 @@ private:
     QScatterSeries * m_range_data_maximum_rx1;
 };
 
-#endif // RANGEDATAPLOT_H
+#endif // RANGEDATACHART_H

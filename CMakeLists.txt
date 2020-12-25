@@ -18,28 +18,11 @@ find_package(Qt5SerialPort REQUIRED)
 find_package(Qt5Charts REQUIRED)
 
 add_subdirectory(3rdparty)
+add_subdirectory(src)
 
-add_executable(P2G-Dashboard
-    src/main.cpp
-    src/types.h
-    src/constants.h
-    src/status.h
-    src/status.cpp
-    src/radar.h
-    src/radar.cpp
-    src/signalprocessor.h
-    src/signalprocessor.cpp
-    src/mainwindow.cpp
-    src/mainwindow.h
-    src/mainwindow.ui
-    src/plots/timedataplot.h
-    src/plots/timedataplot.cpp
-    src/plots/rangedataplot.h
-    src/plots/rangedataplot.cpp
-    src/plots/targetdataplot.h
-    src/plots/targetdataplot.cpp
-)
+add_executable(P2G-Dashboard ${HEADERS} ${SOURCE})
 
+target_include_directories(P2G-Dashboard PRIVATE src)
 target_include_directories(P2G-Dashboard PRIVATE 3rdparty/ComLib_C_Interface/include)
 
 target_link_libraries(P2G-Dashboard PRIVATE

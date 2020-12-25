@@ -1,8 +1,8 @@
-#include "timedataplot.h"
+#include "timedatachart.h"
 
 #include <QFont>
 
-TimeDataPlot::TimeDataPlot()
+TimeDataChart::TimeDataChart()
 {
     m_time_data_series_re_rx1 = new QLineSeries();
     m_time_data_series_im_rx1 = new QLineSeries();
@@ -12,7 +12,7 @@ TimeDataPlot::TimeDataPlot()
     initialize();
 }
 
-void TimeDataPlot::update(const DataPoints_t &re_rx1, const DataPoints_t &im_rx1, const DataPoints_t &re_rx2, const DataPoints_t &im_rx2)
+void TimeDataChart::update(const DataPoints_t &re_rx1, const DataPoints_t &im_rx1, const DataPoints_t &re_rx2, const DataPoints_t &im_rx2)
 {
     m_time_data_series_re_rx1->clear();
     m_time_data_series_im_rx1->clear();
@@ -25,7 +25,12 @@ void TimeDataPlot::update(const DataPoints_t &re_rx1, const DataPoints_t &im_rx1
     m_time_data_series_im_rx2->append(im_rx2);
 }
 
-void TimeDataPlot::initialize()
+void TimeDataChart::setChartTheme(QChart::ChartTheme theme)
+{
+    setTheme(theme);
+}
+
+void TimeDataChart::initialize()
 {
 
     m_time_data_series_re_rx1->setName("Inphase signal<br>component antenna 1");

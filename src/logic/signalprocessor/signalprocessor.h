@@ -1,7 +1,7 @@
 #ifndef SIGNALPROCESSOR_H
 #define SIGNALPROCESSOR_H
 
-#include "types.h"
+#include <misc/types.h>
 
 
 class SignalProcessor

@@ -1,11 +1,12 @@
-#include "mainwindow.h"
-#include "radar.h"
-#include "status.h"
-#include "types.h"
-#include "constants.h"
-#include "plots/timedataplot.h"
-#include "plots/rangedataplot.h"
-#include "plots/targetdataplot.h"
+#include <misc/types.h>
+#include <misc/constants.h>
+#include <logic/radar/radar.h>
+#include <gui/dashboard/dashboard.h>
+#include <gui/status/status.h>
+#include <gui/settings/settings.h>
+#include <gui/chart/timedata/timedatachart.h>
+#include <gui/chart/rangedata/rangedatachart.h>
+#include <gui/chart/targetdata/targetdatachart.h>
 #ifdef __linux__
     #include "sigwatch.h"
 #endif
@@ -112,31 +113,37 @@ int main(int argc, char *argv[])
 
     // Initiate all variables
     Radar r;
-    MainWindow w;
+    Dashboard d;
     Status s;
-    TimeDataPlot timedata;
-    RangeDataPlot rangedata;
-    TargetDataPlot targetdata;
+    Settings settings;
+    TimeDataChart timedata;
+    RangeDataChart rangedata;
+    TargetDataChart targetdata;
 
     // Setup the Mainwindow
-    w.setStatus(&s);
-    w.setPlot(&timedata, PlotType_t::TimeData);
-    w.setPlot(&rangedata, PlotType_t::RangeData);
-    w.setPlot(&targetdata, PlotType_t::TargetData);
+    d.setStatus(&s);
+    d.setSettings(&settings);
+    d.setChart(&timedata, ChartType_t::TimeData);
+    d.setChart(&rangedata, ChartType_t::RangeData);
+    d.setChart(&targetdata, ChartType_t::TargetData);
+
+    QObject::connect(&settings, &Settings::chartThemeChanged, &timedata, &TimeDataChart::setChartTheme);
+    QObject::connect(&settings, &Settings::chartThemeChanged, &rangedata, &RangeDataChart::setChartTheme);
+    QObject::connect(&settings, &Settings::chartThemeChanged, &targetdata, &TargetDataChart::setChartTheme);
 
     // Some connection for the statusbar
     QObject::connect(&r, &Radar::connectionChanged, &s, &Status::updateConnection);
     QObject::connect(&r, &Radar::firmwareInformationChanged, &s, &Status::updateFirmwareInformation);
     QObject::connect(&r, &Radar::temperatureChanged, &s, &Status::updateTemperature);
     QObject::connect(&r, &Radar::serialPortChanged, &s, &Status::updateSerialPort);
-    QObject::connect(&s, &Status::changed, &w, &MainWindow::updateStatus);
+    QObject::connect(&s, &Status::changed, &d, &Dashboard::updateStatus);
 
     // Some connections for the plots
     qRegisterMetaType<Targets_t>("Targets_t");
     qRegisterMetaType<DataPoints_t>("DataPoints_t");
-    QObject::connect(&r, &Radar::timeDataChanged, &timedata, &TimeDataPlot::update);
-    QObject::connect(&r, &Radar::rangeDataChanged, &rangedata, &RangeDataPlot::update);
-    QObject::connect(&r, &Radar::targetDataChanged, &targetdata, &TargetDataPlot::update);
+    QObject::connect(&r, &Radar::timeDataChanged, &timedata, &TimeDataChart::update);
+    QObject::connect(&r, &Radar::rangeDataChanged, &rangedata, &RangeDataChart::update);
+    QObject::connect(&r, &Radar::targetDataChanged, &targetdata, &TargetDataChart::update);
 
     // Try to setup the radar sensor
     if (!tryConnect(r))
@@ -153,14 +160,14 @@ int main(int argc, char *argv[])
     // Some more connections
     QObject::connect(t, &QThread::started, &r, &Radar::doMeasurement);
 #ifdef _WIN32
-    QObject::connect(&w, &MainWindow::closed, &r, &Radar::disconnect, Qt::DirectConnection);
+    QObject::connect(&d, &Dashboard::closed, &r, &Radar::disconnect, Qt::DirectConnection);
 #endif
 
     // Start the thread
     t->start();
 
     // Main thread execution continues...
-    w.show();
+    d.show();
 
 #ifdef __linux__
     auto ret = a.exec();

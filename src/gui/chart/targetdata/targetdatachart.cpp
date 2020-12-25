@@ -1,12 +1,12 @@
-#include "targetdataplot.h"
+#include "targetdatachart.h"
 
-TargetDataPlot::TargetDataPlot()
+TargetDataChart::TargetDataChart()
 {
     m_target_data_series = new QScatterSeries();
     initialize();
 }
 
-void TargetDataPlot::update(const Targets_t &data)
+void TargetDataChart::update(const Targets_t &data)
 {
     m_target_data_series->clear();
 
@@ -14,7 +14,12 @@ void TargetDataPlot::update(const Targets_t &data)
         m_target_data_series->append(QPointF(e.azimuth, e.radius/100));
 }
 
-void TargetDataPlot::initialize()
+void TargetDataChart::setChartTheme(QChart::ChartTheme theme)
+{
+    setTheme(theme);
+}
+
+void TargetDataChart::initialize()
 {
     m_target_data_series->setName("Detected targets");
     m_target_data_series->setMarkerSize(12);
@@ -45,42 +50,34 @@ void TargetDataPlot::initialize()
     setTitleFont(font);
 
     QLineSeries *seriesleft1 = new QLineSeries();
-    seriesleft1->attachAxis(angularAxis);
-    seriesleft1->attachAxis(radialAxis);
     seriesleft1->append(0,0);
     seriesleft1->append(55, 100);
 
     QLineSeries *seriesright1 = new QLineSeries();
-    seriesright1->attachAxis(angularAxis);
-    seriesright1->attachAxis(radialAxis);
     seriesright1->append(0,0);
     seriesright1->append(-180, 100);
 
     QLineSeries *seriesleft2 = new QLineSeries();
-    seriesleft2->attachAxis(angularAxis);
-    seriesleft2->attachAxis(radialAxis);
     seriesleft2->append(0,0);
     seriesleft2->append(-55, 100);
 
     QLineSeries *seriesright2 = new QLineSeries();
-    seriesright2->attachAxis(angularAxis);
-    seriesright2->attachAxis(radialAxis);
     seriesright2->append(0,0);
     seriesright2->append(-180, 100);
 
     QAreaSeries * area1 = new QAreaSeries(seriesleft1, seriesright1);
-    area1->setBorderColor(Qt::white);
-    area1->setOpacity(0.5);
     addSeries(area1);
+    area1->setBorderColor(Qt::transparent);
+    area1->setOpacity(0.5);
     area1->setBrush(QColor("#c0000000"));
     area1->attachAxis(angularAxis);
     area1->attachAxis(radialAxis);
     legend()->markers(area1)[0]->setVisible(false);
 
     QAreaSeries * area2 = new QAreaSeries(seriesleft2, seriesright2);
-    area2->setBorderColor(Qt::white);
-    area2->setOpacity(0.5);
     addSeries(area2);
+    area2->setBorderColor(Qt::transparent);
+    area2->setOpacity(0.5);
     area2->setBrush(QColor("#c0000000"));
     area2->attachAxis(angularAxis);
     area2->attachAxis(radialAxis);

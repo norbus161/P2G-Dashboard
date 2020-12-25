@@ -1,8 +1,8 @@
 #ifndef RADAR_H
 #define RADAR_H
 
-#include "types.h"
-#include "signalprocessor.h"
+#include <misc/types.h>
+#include <logic/signalprocessor/signalprocessor.h>
 
 #include <persistence1d.hpp>
 #include <Protocol.h>

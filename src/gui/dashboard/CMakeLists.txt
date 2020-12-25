@@ -1,0 +1,11 @@
+set(SOURCE
+    ${SOURCE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/dashboard.cpp
+    PARENT_SCOPE
+)
+set(HEADERS
+    ${HEADERS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/dashboard.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dashboard.h
+    PARENT_SCOPE
+)

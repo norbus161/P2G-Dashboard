@@ -1,6 +1,6 @@
-#include "rangedataplot.h"
+#include "rangedatachart.h"
 
-RangeDataPlot::RangeDataPlot()
+RangeDataChart::RangeDataChart()
 {
     m_range_data_series_upper_rx1 = new QLineSeries();
     m_range_data_series_rx1 = new QAreaSeries(m_range_data_series_upper_rx1);
@@ -10,7 +10,7 @@ RangeDataPlot::RangeDataPlot()
     initialize();
 }
 
-void RangeDataPlot::update(const DataPoints_t &rx1, const DataPoints_t &rx2, const DataPoints_t &maxima, const double &max_y)
+void RangeDataChart::update(const DataPoints_t &rx1, const DataPoints_t &rx2, const DataPoints_t &maxima, const double &max_y)
 {
     m_range_data_series_upper_rx1->clear();
     m_range_data_series_upper_rx2->clear();
@@ -22,7 +22,12 @@ void RangeDataPlot::update(const DataPoints_t &rx1, const DataPoints_t &rx2, con
     static_cast<QValueAxis*>(axes(Qt::Vertical).back())->setMax(max_y + 0.2);
 }
 
-void RangeDataPlot::initialize()
+void RangeDataChart::setChartTheme(QChart::ChartTheme theme)
+{
+    setTheme(theme);
+}
+
+void RangeDataChart::initialize()
 {
     m_range_data_series_rx1->setName("Antenna 1");
     m_range_data_series_rx2->setName("Antenna 2");

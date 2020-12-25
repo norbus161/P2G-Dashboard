@@ -15,7 +15,7 @@ using Complex_t = std::complex<double>;
 using ComplexVec_t = std::vector<Complex_t>;
 
 
-enum class PlotType_t
+enum class ChartType_t
 {
     TimeData,
     RangeData,

@@ -1,21 +1,22 @@
-#ifndef TARGETDATAPLOT_H
-#define TARGETDATAPLOT_H
+#ifndef TARGETDATACHART_H
+#define TARGETDATACHART_H
 
-#include "src/types.h"
+#include <misc/types.h>
 
 #include <QtCharts>
 
 using namespace QtCharts;
 
-class TargetDataPlot : public QPolarChart
+class TargetDataChart : public QPolarChart
 {
     Q_OBJECT
 
 public:
-    TargetDataPlot();
+    TargetDataChart();
 
 public slots:
     void update(Targets_t const & data);
+    void setChartTheme(ChartTheme theme);
 
 private:
     void initialize();
@@ -24,4 +25,4 @@ private:
     QScatterSeries * m_target_data_series;
 };
 
-#endif // TARGETDATAPLOT_H
+#endif // TARGETDATACHART_H

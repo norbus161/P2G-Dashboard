@@ -1,22 +1,23 @@
-#ifndef TIMEDATAPLOT_H
-#define TIMEDATAPLOT_H
+#ifndef TIMEDATACHART_H
+#define TIMEDATACHART_H
 
-#include "src/types.h"
+#include <misc/types.h>
 
 #include <QtCharts>
 
 using namespace QtCharts;
 
-class TimeDataPlot : public QChart
+class TimeDataChart : public QChart
 {
     Q_OBJECT
 
 public:
-    TimeDataPlot();
+    TimeDataChart();
 
 public slots:
     void update(DataPoints_t const & re_rx1, DataPoints_t const & im_rx1,
                 DataPoints_t const & re_rx2, DataPoints_t const & im_rx2);
+    void setChartTheme(ChartTheme theme);
 private:
     void initialize();
 
@@ -27,4 +28,4 @@ private:
     QLineSeries * m_time_data_series_im_rx2;
 };
 
-#endif // TIMEDATAPLOT_H
+#endif // TIMEDATACHART_H
