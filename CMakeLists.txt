@@ -20,7 +20,8 @@ find_package(Qt5Charts REQUIRED)
 add_subdirectory(3rdparty)
 add_subdirectory(src)
 
-add_executable(P2G-Dashboard ${HEADERS} ${SOURCE})
+set (RESOURCES resources.qrc)
+add_executable(P2G-Dashboard ${HEADERS} ${SOURCE} ${RESOURCES})
 
 target_include_directories(P2G-Dashboard PRIVATE src)
 target_include_directories(P2G-Dashboard PRIVATE 3rdparty/ComLib_C_Interface/include)

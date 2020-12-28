@@ -20,7 +20,8 @@ constexpr auto STATE_RADAR_DISCONNECTED = -1;
 void CbReceivedFrameData(void* context, int32_t handle, uint8_t endpoint, const Frame_Info_t* frame_info);
 void CbReceivedTargetData(void* context, int32_t handle, uint8_t endpoint, const  Target_Info_t* frame_info, uint8_t num_targets);
 void CbTemperature(void *context, int32_t handle, uint8_t endpoint, uint8_t temp_sensor, int32_t temperature);
-
+void CbGetFrameFormat(void *context, int32_t protocol_handle, uint8_t endpoint, const Frame_Format_t *frame_format);
+void CbGetDspSettings(void *context, int32_t protocol_handle, uint8_t endpoint, const DSP_Settings_t *dsp_settings);
 
 Radar::Radar(QObject *parent) : QObject(parent)
 {
@@ -189,6 +190,30 @@ void Radar::doMeasurement()
     m.unlock();
 }
 
+void Radar::getFrameFormat()
+{
+    QMutexLocker locker(&m);
+    printStatusCodeInformation(ep_radar_base_get_frame_format(m_handle, m_endpoints[EndpointType_t::Base]));
+}
+
+void Radar::setFrameFormat(const Frame_Format_t &frame_format)
+{
+    QMutexLocker locker(&m);
+    printStatusCodeInformation(ep_radar_base_set_frame_format(m_handle, m_endpoints[EndpointType_t::Base], &frame_format));
+}
+
+void Radar::getDspSettings()
+{
+    QMutexLocker locker(&m);
+    printStatusCodeInformation(ep_targetdetect_get_dsp_settings(m_handle, m_endpoints[EndpointType_t::TargetDetection]));
+}
+
+void Radar::setDspSettings(const DSP_Settings_t &dsp_settings)
+{
+    QMutexLocker locker(&m);
+    printStatusCodeInformation(ep_targetdetect_set_dsp_settings(m_handle, m_endpoints[EndpointType_t::TargetDetection], &dsp_settings));
+}
+
 void Radar::emitRangeDataSignal(const DataPoints_t &re_rx1, const DataPoints_t &im_rx1,
                                 const DataPoints_t &re_rx2, const DataPoints_t &im_rx2)
 {
@@ -256,6 +281,8 @@ void Radar::setCallbackFunctions()
     ep_radar_base_set_callback_data_frame(CbReceivedFrameData, this);
     ep_targetdetect_set_callback_target_processing(CbReceivedTargetData, this);
     ep_radar_base_set_callback_temperature(CbTemperature, this);
+    ep_radar_base_set_callback_frame_format(CbGetFrameFormat, this);
+    ep_targetdetect_set_callback_dsp_settings(CbGetDspSettings, this);
 }
 
 void CbReceivedFrameData(void* context, int32_t, uint8_t, const Frame_Info_t* frame_info)
@@ -311,6 +338,21 @@ void CbTemperature(void * context, int32_t, uint8_t, uint8_t, int32_t temperatur
         return;
 
     auto temp = QString::number(temperature/1000.0,'f',2);
-    qInfo() << "Temperature: " << temp<< "degrees";
     emit ((Radar*)context)->temperatureChanged(temp);
+}
+
+void CbGetFrameFormat(void *context, int32_t, uint8_t, const Frame_Format_t *frame_format)
+{
+    if (frame_format == nullptr)
+        return;
+
+    emit ((Radar*)context)->frameFormatChanged(*frame_format);
+}
+
+void CbGetDspSettings(void *context, int32_t, uint8_t, const DSP_Settings_t *dsp_settings)
+{
+    if (dsp_settings == nullptr)
+        return;
+
+    emit ((Radar*)context)->dspSettingsChanged(*dsp_settings);
 }

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/icons/radar.ico</file>
+        <file>resources/icons/settings.ico</file>
+    </qresource>
+</RCC>

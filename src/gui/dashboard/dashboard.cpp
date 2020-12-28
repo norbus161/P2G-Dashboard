@@ -6,7 +6,9 @@
 Dashboard::Dashboard(QWidget *parent): QMainWindow(parent), ui(new Ui::Dashboard)
 {
     ui->setupUi(this);
-    m_status = nullptr;
+    m_statusbar = nullptr;
+    m_toolbar = nullptr;
+    m_settings = nullptr;
 }
 
 Dashboard::~Dashboard()
@@ -14,12 +16,22 @@ Dashboard::~Dashboard()
     delete ui;
 }
 
-void Dashboard::setStatus(Status *status)
+void Dashboard::setStatusbar(StatusBar *statusbar)
 {
-    if (status == nullptr)
+    if (statusbar == nullptr)
         return;
 
-    m_status = status;
+    m_statusbar = statusbar;
+    setStatusBar(m_statusbar);
+}
+
+void Dashboard::setToolbar(ToolBar *toolbar)
+{
+    if (toolbar == nullptr)
+        return;
+
+    m_toolbar = toolbar;
+    addToolBar(Qt::ToolBarArea::LeftToolBarArea, m_toolbar);
 }
 
 void Dashboard::setSettings(Settings *settings)
@@ -28,16 +40,6 @@ void Dashboard::setSettings(Settings *settings)
         return;
 
     m_settings = settings;
-    m_settings->setModal(false);
-
-    auto open_settings = new QAction("&Settings", this);
-    auto s = menuBar()->addMenu("&View");
-    s->addAction(open_settings);
-
-    connect(open_settings, &QAction::triggered, this, [=]()
-    {
-        m_settings->show();
-    });
 }
 
 void Dashboard::setChart(QChart *chart, ChartType_t type)
@@ -66,14 +68,6 @@ void Dashboard::setChart(QChart *chart, ChartType_t type)
     v->show();
 }
 
-void Dashboard::updateStatus()
-{
-    if (m_status == nullptr)
-        return;
-
-    ui->statusBar->showMessage(m_status->get());
-}
-
 #ifdef _WIN32
 void Dashboard::closeEvent(QCloseEvent *event)
 {
@@ -81,5 +75,3 @@ void Dashboard::closeEvent(QCloseEvent *event)
     event->accept();
 }
 #endif
-
-

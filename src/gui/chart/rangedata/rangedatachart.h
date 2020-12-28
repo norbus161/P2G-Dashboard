@@ -20,13 +20,14 @@ public slots:
     void setChartTheme(ChartTheme theme);
 private:
     void initialize();
+    void setFontSize(size_t size);
 
 private:
-    QAreaSeries * m_range_data_series_rx1;
-    QLineSeries * m_range_data_series_upper_rx1;
-    QAreaSeries * m_range_data_series_rx2;
-    QLineSeries * m_range_data_series_upper_rx2;
-    QScatterSeries * m_range_data_maximum_rx1;
+    QAreaSeries m_range_data_series_rx1;
+    QLineSeries m_range_data_series_upper_rx1;
+    QAreaSeries m_range_data_series_rx2;
+    QLineSeries m_range_data_series_upper_rx2;
+    QScatterSeries m_range_data_maximum_rx1;
 };
 
 #endif // RANGEDATACHART_H

@@ -3,7 +3,8 @@
 
 #include <misc/types.h>
 #include <gui/settings/settings.h>
-#include <gui/status/status.h>
+#include <gui/statusbar/statusbar.h>
+#include <gui/toolbar/toolbar.h>
 
 #include <EndpointRadarBase.h>
 #include <QMainWindow>
@@ -22,13 +23,12 @@ public:
     Dashboard(QWidget *parent = nullptr);
     ~Dashboard();
 
-    void setStatus(Status *status);
+    void setStatusbar(StatusBar *statusbar);
+    void setToolbar(ToolBar *toolbar);
     void setSettings(Settings *settings);
     void setChart(QtCharts::QChart *chart, ChartType_t type);
 
 public slots:
-    void updateStatus();
-
 #ifdef _WIN32
     virtual void closeEvent(QCloseEvent *event) override;
 #endif
@@ -38,7 +38,8 @@ signals:
 
 private:
     Ui::Dashboard *ui;
-    Status *m_status;
+    StatusBar *m_statusbar;
+    ToolBar *m_toolbar;
     Settings *m_settings;
 };
 #endif // DASHBOARD_H

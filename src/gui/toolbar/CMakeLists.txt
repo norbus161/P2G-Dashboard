@@ -1,11 +1,11 @@
 set(SOURCE
     ${SOURCE}
-    ${CMAKE_CURRENT_SOURCE_DIR}/status.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/toolbar.cpp
     PARENT_SCOPE
 )
 set(HEADERS
     ${HEADERS}
-    ${CMAKE_CURRENT_SOURCE_DIR}/status.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/toolbar.h
     PARENT_SCOPE
 )
 

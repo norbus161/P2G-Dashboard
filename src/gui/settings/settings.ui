@@ -6,35 +6,277 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>684</width>
-    <height>434</height>
+    <width>603</width>
+    <height>439</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <property name="windowIcon">
+   <iconset resource="../../../resources.qrc">
+    <normaloff>:/resources/icons/settings.ico</normaloff>:/resources/icons/settings.ico</iconset>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Theme</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QSpinBox" name="spinBox"/>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QGroupBox" name="grp_general">
+         <property name="title">
+          <string>General</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="lbl_theme">
+              <property name="text">
+               <string>Theme</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="combo_theme"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="grp_general_2">
+         <property name="title">
+          <string>Device Settings</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lbl_bandwidth">
+            <property name="text">
+             <string>Bandwidth [Mhz]</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="txt_bandwidth"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lbl_up_chirp_time">
+            <property name="text">
+             <string>Up Chirp Time [us]</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="txt_up_chirp_time"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="lbl_tx_power_level">
+            <property name="text">
+             <string>TX power level</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="combo_tx_power_level"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="lbl_rx_pga_level">
+            <property name="text">
+             <string>RX PGA Level</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="combo_rx_pga_level"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="lbl_rx_bgt_lna_gain">
+            <property name="text">
+             <string>RX BGT LNA Gain</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QComboBox" name="combo_rx_bgt_lna_gain"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="lbl_duty_cycle_status">
+            <property name="text">
+             <string>Duty Cycle Status</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QComboBox" name="combo_duty_cycle_status"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="group_frame_format_settings">
+         <property name="title">
+          <string>Frame Format Settings</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lbl_chirps_per_frame">
+            <property name="text">
+             <string>Chirps per Frame</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="txt_chirps_per_frame"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lbl_samples_per_chirp">
+            <property name="text">
+             <string>Samples per Chirp</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="txt_samples_per_chirp"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="group_dsp_settings">
+       <property name="title">
+        <string>DSP Settings</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="QLabel" name="lbl_bandwidth_2">
+          <property name="text">
+           <string>Min Range [m]</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="txt_min_range"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="lbl_up_chirp_time_2">
+          <property name="text">
+           <string>Max Range [m]</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="txt_max_range"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="lbl_tx_power_level_2">
+          <property name="text">
+           <string>Min Speed [m/s]</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="txt_min_speed"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="lbl_rx_pga_level_2">
+          <property name="text">
+           <string>Max Speed [m/s]</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="txt_max_speed"/>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="lbl_rx_bgt_lna_gain_2">
+          <property name="text">
+           <string>Speed Threshold [dB]</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="txt_speed_threshold"/>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="lbl_duty_cycle_status_2">
+          <property name="text">
+           <string>Range Threshold [dB]</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLineEdit" name="txt_range_threshold"/>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="lbl_up_chirp_time_4">
+          <property name="text">
+           <string>Tracking</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLineEdit" name="txt_tracking"/>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="lbl_tx_power_level_4">
+          <property name="text">
+           <string>Number of Tracks</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QLineEdit" name="txt_number_of_track"/>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="lbl_rx_pga_level_4">
+          <property name="text">
+           <string>Median Filter Depth</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
+         <widget class="QLineEdit" name="txt_median_filter_depth"/>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="lbl_rx_bgt_lna_gain_4">
+          <property name="text">
+           <string>MTI Filter Selection</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QLineEdit" name="txt_mti_filter_selection"/>
+        </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="lbl_duty_cycle_status_4">
+          <property name="text">
+           <string>MTI Filter Weight</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="1">
+         <widget class="QLineEdit" name="txt_mti_filter_weight"/>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="btn_apply">
        <property name="text">
         <string>Apply</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="btn_cancel">
        <property name="text">
         <string>Cancel</string>
        </property>
@@ -44,6 +286,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../../resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

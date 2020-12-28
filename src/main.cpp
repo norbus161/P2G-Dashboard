@@ -2,7 +2,8 @@
 #include <misc/constants.h>
 #include <logic/radar/radar.h>
 #include <gui/dashboard/dashboard.h>
-#include <gui/status/status.h>
+#include <gui/statusbar/statusbar.h>
+#include <gui/toolbar/toolbar.h>
 #include <gui/settings/settings.h>
 #include <gui/chart/timedata/timedatachart.h>
 #include <gui/chart/rangedata/rangedatachart.h>
@@ -111,63 +112,83 @@ int main(int argc, char *argv[])
     QObject::connect(&sigwatch, SIGNAL(unixSignal(int)), &a, SLOT(quit()));
 #endif
 
-    // Initiate all variables
-    Radar r;
-    Dashboard d;
-    Status s;
-    Settings settings;
+    // Instantiate all variables
+    Radar radar;
+    Dashboard dashboard;
+    StatusBar statusbar(&dashboard);
+    ToolBar toolbar(&dashboard);
+    Settings settings(&dashboard);
     TimeDataChart timedata;
     RangeDataChart rangedata;
     TargetDataChart targetdata;
 
     // Setup the Mainwindow
-    d.setStatus(&s);
-    d.setSettings(&settings);
-    d.setChart(&timedata, ChartType_t::TimeData);
-    d.setChart(&rangedata, ChartType_t::RangeData);
-    d.setChart(&targetdata, ChartType_t::TargetData);
+    dashboard.setStatusbar(&statusbar);
+    dashboard.setToolbar(&toolbar);
+    dashboard.setSettings(&settings);
+    dashboard.setChart(&timedata, ChartType_t::TimeData);
+    dashboard.setChart(&rangedata, ChartType_t::RangeData);
+    dashboard.setChart(&targetdata, ChartType_t::TargetData);
 
+    // Connections: Toolbar --> Settings
+    QObject::connect(&toolbar, &ToolBar::settingsClicked, &settings, &Settings::requestAll);
+    QObject::connect(&toolbar, &ToolBar::settingsClicked, &settings, &Settings::show);
+
+    // Connections: Settings --> Radar
+    qRegisterMetaType<Frame_Format_t>("Frame_Format_t");
+    QObject::connect(&settings, &Settings::requestFrameFormat, &radar, &Radar::getFrameFormat, Qt::DirectConnection);
+    QObject::connect(&settings, &Settings::frameFormatChanged, &radar, &Radar::setFrameFormat, Qt::DirectConnection);
+    qRegisterMetaType<DSP_Settings_t>("DSP_Settings_t");
+    QObject::connect(&settings, &Settings::requestDspSettings, &radar, &Radar::getDspSettings, Qt::DirectConnection);
+    QObject::connect(&settings, &Settings::dspSettingsChanged, &radar, &Radar::setDspSettings, Qt::DirectConnection);
+
+    // Connections: Radar --> Settings
+    QObject::connect(&radar, &Radar::frameFormatChanged, &settings, &Settings::responseFrameFormat);
+    QObject::connect(&radar, &Radar::dspSettingsChanged, &settings, &Settings::responseDspSettings);
+
+    // Connections: Settings --> Charts
     QObject::connect(&settings, &Settings::chartThemeChanged, &timedata, &TimeDataChart::setChartTheme);
     QObject::connect(&settings, &Settings::chartThemeChanged, &rangedata, &RangeDataChart::setChartTheme);
     QObject::connect(&settings, &Settings::chartThemeChanged, &targetdata, &TargetDataChart::setChartTheme);
 
-    // Some connection for the statusbar
-    QObject::connect(&r, &Radar::connectionChanged, &s, &Status::updateConnection);
-    QObject::connect(&r, &Radar::firmwareInformationChanged, &s, &Status::updateFirmwareInformation);
-    QObject::connect(&r, &Radar::temperatureChanged, &s, &Status::updateTemperature);
-    QObject::connect(&r, &Radar::serialPortChanged, &s, &Status::updateSerialPort);
-    QObject::connect(&s, &Status::changed, &d, &Dashboard::updateStatus);
+    // Connections: Radar --> Statusbar
+    QObject::connect(&radar, &Radar::connectionChanged, &statusbar, &StatusBar::updateConnection);
+    QObject::connect(&radar, &Radar::firmwareInformationChanged, &statusbar, &StatusBar::updateFirmwareInformation);
+    QObject::connect(&radar, &Radar::temperatureChanged, &statusbar, &StatusBar::updateTemperature);
+    QObject::connect(&radar, &Radar::serialPortChanged, &statusbar, &StatusBar::updateSerialPort);
 
-    // Some connections for the plots
+    // Connections: Radar --> Charts
     qRegisterMetaType<Targets_t>("Targets_t");
     qRegisterMetaType<DataPoints_t>("DataPoints_t");
-    QObject::connect(&r, &Radar::timeDataChanged, &timedata, &TimeDataChart::update);
-    QObject::connect(&r, &Radar::rangeDataChanged, &rangedata, &RangeDataChart::update);
-    QObject::connect(&r, &Radar::targetDataChanged, &targetdata, &TargetDataChart::update);
+    QObject::connect(&radar, &Radar::timeDataChanged, &timedata, &TimeDataChart::update);
+    QObject::connect(&radar, &Radar::rangeDataChanged, &rangedata, &RangeDataChart::update);
+    QObject::connect(&radar, &Radar::targetDataChanged, &targetdata, &TargetDataChart::update);
 
     // Try to setup the radar sensor
-    if (!tryConnect(r))
+    if (!tryConnect(radar))
         return ERROR_STARTUP_CONNECTION_FAILED;
-    if (!tryAddingEndpoints(r))
+    if (!tryAddingEndpoints(radar))
         return ERROR_STARTUP_ADDING_ENDPOINTS_FAILED;
-    if (!trySettingUpFrameTrigger(r))
+    if (!trySettingUpFrameTrigger(radar))
         return ERROR_STARTUP_FRAMETRIGGER_SETUP_FAILED;
 
     // Move the radar object into another thread, so the main thread with the gui won't block
-    QThread* t = new QThread();
-    r.moveToThread(t);
+    QThread* thread = new QThread();
+    radar.moveToThread(thread);
 
-    // Some more connections
-    QObject::connect(t, &QThread::started, &r, &Radar::doMeasurement);
+    // Connections: Thread --> Radar
+    QObject::connect(thread, &QThread::started, &radar, &Radar::doMeasurement);
+
 #ifdef _WIN32
-    QObject::connect(&d, &Dashboard::closed, &r, &Radar::disconnect, Qt::DirectConnection);
+    // Connections: Dashboard --> Radar
+    QObject::connect(&dashboard, &Dashboard::closed, &radar, &Radar::disconnect, Qt::DirectConnection);
 #endif
 
     // Start the thread
-    t->start();
+    thread->start();
 
     // Main thread execution continues...
-    d.show();
+    dashboard.show();
 
 #ifdef __linux__
     auto ret = a.exec();

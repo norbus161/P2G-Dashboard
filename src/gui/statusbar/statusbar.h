@@ -1,17 +1,14 @@
-#ifndef STATUS_H
-#define STATUS_H
+#ifndef STATUSBAR_H
+#define STATUSBAR_H
 
-#include "Protocol.h"
+#include <QStatusBar>
 
-#include <QObject>
-
-class Status : public QObject
+class StatusBar : public QStatusBar
 {
     Q_OBJECT
 
 public:
-    explicit Status(QObject *parent = nullptr);
-    QString get();
+    explicit StatusBar(QWidget *parent = nullptr);
 
 public slots:
     void updateFirmwareInformation(QString const & description, QString const & version);
@@ -19,8 +16,8 @@ public slots:
     void updateTemperature(QString const & temperature);
     void updateConnection(bool connected);
 
-signals:
-    void changed();
+private:
+    QString getStatus();
 
 private:
     QString m_firmware_description;
@@ -30,4 +27,4 @@ private:
     bool m_connection_state;
 };
 
-#endif // STATUS_H
+#endif // STATUSBAR_H

@@ -20,12 +20,13 @@ public slots:
     void setChartTheme(ChartTheme theme);
 private:
     void initialize();
+    void setFontSize(size_t size);
 
 private:
-    QLineSeries * m_time_data_series_re_rx1;
-    QLineSeries * m_time_data_series_im_rx1;
-    QLineSeries * m_time_data_series_re_rx2;
-    QLineSeries * m_time_data_series_im_rx2;
+    QLineSeries m_time_data_series_re_rx1;
+    QLineSeries m_time_data_series_im_rx1;
+    QLineSeries m_time_data_series_re_rx2;
+    QLineSeries m_time_data_series_im_rx2;
 };
 
 #endif // TIMEDATACHART_H

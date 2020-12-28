@@ -20,9 +20,10 @@ public slots:
 
 private:
     void initialize();
+    void setFontSize(size_t size);
 
 private:
-    QScatterSeries * m_target_data_series;
+    QScatterSeries m_target_data_series;
 };
 
 #endif // TARGETDATACHART_H

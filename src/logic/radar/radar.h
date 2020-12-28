@@ -31,6 +31,10 @@ public:
 public slots:
     void disconnect();
     void doMeasurement();
+    void getFrameFormat();
+    void setFrameFormat(Frame_Format_t const & frame_format);
+    void getDspSettings();
+    void setDspSettings(DSP_Settings_t const & dsp_settings);
 
 signals:
     void timeDataChanged(DataPoints_t const & re_rx1, DataPoints_t const & im_rx1,
@@ -42,6 +46,8 @@ signals:
     void serialPortChanged(QString const & port);
     void temperatureChanged(QString const & temperature);
     void connectionChanged(bool connected);
+    void frameFormatChanged(Frame_Format_t const & frame_format);
+    void dspSettingsChanged(DSP_Settings_t const & dsp_settings);
 
 private:
     void printSerialPortInformation(QSerialPortInfo const & info);
