@@ -21,13 +21,6 @@ void RangeDataChart::update(const DataPoints_t &rx1, const DataPoints_t &rx2, co
     static_cast<QValueAxis*>(axes(Qt::Vertical).back())->setMax(max_y + 0.2);
 }
 
-void RangeDataChart::setChartTheme(QChart::ChartTheme theme)
-{
-    setTheme(theme);
-    setFontSize(20);
-    m_range_data_maximum_rx1.setBrush(Qt::red);
-}
-
 void RangeDataChart::initialize()
 {
     m_range_data_series_rx1.setName("Antenna 1");

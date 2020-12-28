@@ -16,7 +16,6 @@ public:
 
 public slots:
     void update(Targets_t const & data);
-    void setChartTheme(ChartTheme theme);
 
 private:
     void initialize();

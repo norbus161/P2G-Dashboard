@@ -13,19 +13,15 @@ void TargetDataChart::update(const Targets_t &data)
         m_target_data_series.append(QPointF(e.azimuth, e.radius/100));
 }
 
-void TargetDataChart::setChartTheme(QChart::ChartTheme theme)
-{
-    setTheme(theme);
-    setFontSize(20);
-    m_target_data_series.setColor(Qt::red);
-}
-
 void TargetDataChart::initialize()
 {
     m_target_data_series.setName("Detected targets");
     m_target_data_series.setMarkerSize(12);
     m_target_data_series.setColor(Qt::red);
     m_target_data_series.setBorderColor(Qt::white);
+    m_target_data_series.setPointLabelsVisible(true);
+    m_target_data_series.setPointLabelsColor(Qt::white);
+    m_target_data_series.setPointLabelsFormat("Range: @yPoint m Angle: @xPoint ° ");
 
     setTheme(QChart::ChartThemeBlueCerulean);
     addSeries(&m_target_data_series);

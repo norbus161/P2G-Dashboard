@@ -20,12 +20,6 @@ void TimeDataChart::update(const DataPoints_t &re_rx1, const DataPoints_t &im_rx
     m_time_data_series_im_rx2.append(im_rx2);
 }
 
-void TimeDataChart::setChartTheme(QChart::ChartTheme theme)
-{
-    setTheme(theme);
-    setFontSize(20);
-}
-
 void TimeDataChart::initialize()
 {
 

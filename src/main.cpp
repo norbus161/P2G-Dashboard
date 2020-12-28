@@ -31,12 +31,15 @@ void messageHandler(QtMsgType type, QMessageLogContext const &, QString const & 
             break;
         case QtWarningMsg:
             fprintf(stderr, "%s [WARNING]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
+            fflush(stderr);
             break;
         case QtCriticalMsg:
             fprintf(stderr, "%s [CRITICAL]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
+            fflush(stderr);
             break;
         case QtFatalMsg:
             fprintf(stderr, "%s [FATAL]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
+            fflush(stderr);
             break;
     }
 }
@@ -145,11 +148,6 @@ int main(int argc, char *argv[])
     // Connections: Radar --> Settings
     QObject::connect(&radar, &Radar::frameFormatChanged, &settings, &Settings::responseFrameFormat);
     QObject::connect(&radar, &Radar::dspSettingsChanged, &settings, &Settings::responseDspSettings);
-
-    // Connections: Settings --> Charts
-    QObject::connect(&settings, &Settings::chartThemeChanged, &timedata, &TimeDataChart::setChartTheme);
-    QObject::connect(&settings, &Settings::chartThemeChanged, &rangedata, &RangeDataChart::setChartTheme);
-    QObject::connect(&settings, &Settings::chartThemeChanged, &targetdata, &TargetDataChart::setChartTheme);
 
     // Connections: Radar --> Statusbar
     QObject::connect(&radar, &Radar::connectionChanged, &statusbar, &StatusBar::updateConnection);

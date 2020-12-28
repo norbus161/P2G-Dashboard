@@ -17,7 +17,6 @@ public:
 public slots:
     void update(DataPoints_t const & rx1, DataPoints_t const & rx2,
                 DataPoints_t const & maxima, double const & max_y);
-    void setChartTheme(ChartTheme theme);
 private:
     void initialize();
     void setFontSize(size_t size);
