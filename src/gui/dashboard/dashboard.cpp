@@ -9,6 +9,7 @@ Dashboard::Dashboard(QWidget *parent): QMainWindow(parent), ui(new Ui::Dashboard
     m_statusbar = nullptr;
     m_toolbar = nullptr;
     m_settings = nullptr;
+    resize(QDesktopWidget().availableGeometry(this).size() * 0.75);
 }
 
 Dashboard::~Dashboard()
