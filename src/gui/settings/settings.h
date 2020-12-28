@@ -30,7 +30,6 @@ private slots:
     void applyButtonHandler();
 
 signals:
-    void chartThemeChanged(QtCharts::QChart::ChartTheme theme);
     void frameFormatChanged(Frame_Format_t const & frame_format);
     void dspSettingsChanged(DSP_Settings_t const & dsp_settings);
     void requestFrameFormat();
