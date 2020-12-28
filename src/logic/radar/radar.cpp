@@ -50,11 +50,11 @@ bool Radar::connect()
         if (m_handle >= 0)
         {
             qInfo() << "Device found.";
-            emit connectionChanged(true);
             printSerialPortInformation(info);
             printFirmwareInformation();
             setCallbackFunctions();
             m_shutdown = false;
+            emit connectionChanged(true);
             return true;
         }
     }
@@ -89,7 +89,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
         switch(endpoint)
         {
             case EndpointType_t::Calibration:
-                if (ep_calibration_is_compatible_endpoint(m_handle, i) == 0)
+                if (getStatusCodeInformation("Add endpoint", ep_calibration_is_compatible_endpoint(m_handle, i)))
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -97,7 +97,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::AdcXmc:
-                if (ep_radar_adcxmc_is_compatible_endpoint(m_handle, i) == 0)
+                if (getStatusCodeInformation("Add endpoint", ep_radar_adcxmc_is_compatible_endpoint(m_handle, i)))
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -105,7 +105,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::Base:
-                if (ep_radar_base_is_compatible_endpoint(m_handle, i) == 0)
+                if (getStatusCodeInformation("Add endpoint", ep_radar_base_is_compatible_endpoint(m_handle, i)))
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -113,7 +113,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::Doppler:
-                if (ep_radar_doppler_is_compatible_endpoint(m_handle, i) == 0)
+                if (getStatusCodeInformation("Add endpoint", ep_radar_doppler_is_compatible_endpoint(m_handle, i)))
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -121,7 +121,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::Fmcw:
-                if (ep_radar_fmcw_is_compatible_endpoint(m_handle, i) == 0)
+                if (getStatusCodeInformation("Add endpoint", ep_radar_fmcw_is_compatible_endpoint(m_handle, i)))
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -129,7 +129,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::Industrial:
-                if (ep_radar_industrial_is_compatible_endpoint(m_handle, i) == 0)
+                if (getStatusCodeInformation("Add endpoint", ep_radar_industrial_is_compatible_endpoint(m_handle, i)))
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -137,7 +137,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::P2G:
-                if (ep_radar_p2g_is_compatible_endpoint(m_handle, i) == 0)
+                if (getStatusCodeInformation("Add endpoint", ep_radar_p2g_is_compatible_endpoint(m_handle, i)))
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -145,7 +145,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::TargetDetection:
-                if (ep_targetdetect_is_compatible_endpoint(m_handle, i) == 0)
+                if (getStatusCodeInformation("Add endpoint", ep_targetdetect_is_compatible_endpoint(m_handle, i)))
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -159,14 +159,14 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
 
 bool Radar::setAutomaticFrameTrigger(bool enable, const EndpointType_t &endpoint, size_t interval_us)
 {
-    auto ret = 0;
+    auto ret = false;
 
     if (enable)
-        ret = ep_radar_base_set_automatic_frame_trigger(m_handle, m_endpoints[endpoint], interval_us);
+        ret = getStatusCodeInformation("Enable automatic frame trigger", ep_radar_base_set_automatic_frame_trigger(m_handle, m_endpoints[endpoint], interval_us));
     else
-        ret = ep_radar_base_set_automatic_frame_trigger(m_handle, m_endpoints[endpoint], 0);
+        ret = getStatusCodeInformation("Disable automatic frame trigger", ep_radar_base_set_automatic_frame_trigger(m_handle, m_endpoints[endpoint], 0));
 
-    if (ret < 0)
+    if (!ret)
         return false;
 
     return true;
@@ -180,9 +180,10 @@ void Radar::doMeasurement()
         if (m_shutdown)
             break;
 
-        ep_radar_base_get_temperature(m_handle, m_endpoints[EndpointType_t::Base], 0);
-        ep_radar_base_get_frame_data(m_handle, m_endpoints[EndpointType_t::Base], 0);
-        ep_targetdetect_get_targets(m_handle, m_endpoints[EndpointType_t::TargetDetection]);
+        auto res = true;
+        res &= getStatusCodeInformation("Get temperature", ep_radar_base_get_temperature(m_handle, m_endpoints[EndpointType_t::Base], 0));
+        res &= getStatusCodeInformation("Get frame data", ep_radar_base_get_frame_data(m_handle, m_endpoints[EndpointType_t::Base], 0));
+        res &= getStatusCodeInformation("Get target data", ep_targetdetect_get_targets(m_handle, m_endpoints[EndpointType_t::TargetDetection]));
         m.unlock();
 
         QThread::msleep(RADAR_MEASUREMENT_PAUSE_TIME);
@@ -193,29 +194,28 @@ void Radar::doMeasurement()
 void Radar::getFrameFormat()
 {
     QMutexLocker locker(&m);
-    printStatusCodeInformation(ep_radar_base_get_frame_format(m_handle, m_endpoints[EndpointType_t::Base]));
+    getStatusCodeInformation("Get frame format", ep_radar_base_get_frame_format(m_handle, m_endpoints[EndpointType_t::Base]));
 }
 
 void Radar::setFrameFormat(const Frame_Format_t &frame_format)
 {
     QMutexLocker locker(&m);
-    printStatusCodeInformation(ep_radar_base_set_frame_format(m_handle, m_endpoints[EndpointType_t::Base], &frame_format));
+    getStatusCodeInformation("Set frame format", ep_radar_base_set_frame_format(m_handle, m_endpoints[EndpointType_t::Base], &frame_format));
 }
 
 void Radar::getDspSettings()
 {
     QMutexLocker locker(&m);
-    printStatusCodeInformation(ep_targetdetect_get_dsp_settings(m_handle, m_endpoints[EndpointType_t::TargetDetection]));
+    getStatusCodeInformation("Get DSP settings", ep_targetdetect_get_dsp_settings(m_handle, m_endpoints[EndpointType_t::TargetDetection]));
 }
 
 void Radar::setDspSettings(const DSP_Settings_t &dsp_settings)
 {
     QMutexLocker locker(&m);
-    printStatusCodeInformation(ep_targetdetect_set_dsp_settings(m_handle, m_endpoints[EndpointType_t::TargetDetection], &dsp_settings));
+    getStatusCodeInformation("Set DSP settings", ep_targetdetect_set_dsp_settings(m_handle, m_endpoints[EndpointType_t::TargetDetection], &dsp_settings));
 }
 
-void Radar::emitRangeDataSignal(const DataPoints_t &re_rx1, const DataPoints_t &im_rx1,
-                                const DataPoints_t &re_rx2, const DataPoints_t &im_rx2)
+void Radar::emitRangeDataSignal(const DataPoints_t &re_rx1, const DataPoints_t &im_rx1, const DataPoints_t &re_rx2, const DataPoints_t &im_rx2)
 {
 
     auto rx1 = m_signal_processor.calculateRangeData(re_rx1, im_rx1);
@@ -259,19 +259,29 @@ void Radar::printSerialPortInformation(const QSerialPortInfo &info)
 void Radar::printFirmwareInformation()
 {
     Firmware_Information_t info;
-    protocol_get_firmware_information(m_handle, &info);
+    if (getStatusCodeInformation("Get firmware information" ,protocol_get_firmware_information(m_handle, &info)))
+    {
+        QString description = info.description;
+        QString version = QString("%1.%2.%3").arg(info.version_major).arg(info.version_minor).arg(info.version_build);
 
-    QString description = info.description;
-    QString version = QString("%1.%2.%3").arg(info.version_major).arg(info.version_minor).arg(info.version_build);
-
-    qInfo() << "Description: " << description;
-    qInfo() << "Firmware: " << version;
-    emit firmwareInformationChanged(description, version);
+        qInfo() << "Description: " << description;
+        qInfo() << "Firmware: " << version;
+        emit firmwareInformationChanged(description, version);
+    }
 }
 
-void Radar::printStatusCodeInformation(int code)
+bool Radar::getStatusCodeInformation(QString const & origin, int code)
 {
-    qInfo() << "Status: " << protocol_get_status_code_description(m_handle, code);
+    auto ret = protocol_get_status_code_description(m_handle, code);
+
+    if ((code & 0xFFFF) != PROTOCOL_STATUS_OK)
+    {
+        qWarning() << origin << ":" << ret;
+        return false;
+    }
+
+    qInfo() << origin << ":" << ret;
+    return true;
 }
 
 void Radar::setCallbackFunctions()
