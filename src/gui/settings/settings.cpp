@@ -43,6 +43,7 @@ void Settings::applyButtonHandler()
     copy_dsp_settings.enable_mti_filter = ui->txt_mti_filter_selection->text().toInt();
     copy_dsp_settings.mti_filter_length = ui->txt_mti_filter_weight->text().toInt();
     emit dspSettingsChanged(copy_dsp_settings);
+    emit requestDspSettings(); // Read back immediately (just necassery for dsp settings)
 }
 
 void Settings::responseFrameFormat(const Frame_Format_t &frame_format)
