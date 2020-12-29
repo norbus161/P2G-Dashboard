@@ -70,9 +70,6 @@ Execute the application:
 - [ ] Put Range calculation into signal processcor
 - [ ] Radarthread: automatic reconnect 
 - [ ] Settings: add input validator for ranges of settings
-- [x] Settings: units for the settings
-- [x] Connect only to specified FW version
-- [ ] Flash version 1.0.4
 - [ ] Memory leak check
 - [ ] **Refactor code**
 

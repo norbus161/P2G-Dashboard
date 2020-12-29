@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
 
 #ifdef __linux__
     auto ret = a.exec();
-    r.disconnect();
+    radar.disconnect();
     return ret;
 #elif _WIN32
     return a.exec();
