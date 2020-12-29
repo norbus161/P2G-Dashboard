@@ -32,7 +32,11 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="txt_chirps_per_frame"/>
+       <widget class="QLineEdit" name="txt_chirps_per_frame">
+        <property name="toolTip">
+         <string>[1, 64]</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="lbl_samples_per_chirp">
@@ -42,7 +46,11 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="txt_samples_per_chirp"/>
+       <widget class="QLineEdit" name="txt_samples_per_chirp">
+        <property name="toolTip">
+         <string>[32, 64, 128, 256]</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -53,6 +61,27 @@
       <string>DSP Settings</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="txt_min_speed">
+        <property name="toolTip">
+         <string>[0, 65534]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="lbl_tracking">
+        <property name="text">
+         <string>Tracking</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="txt_max_range">
+        <property name="toolTip">
+         <string>[1, 5000]</string>
+        </property>
+       </widget>
+      </item>
       <item row="7" column="0">
        <widget class="QLabel" name="lbl_number_of_tracks">
         <property name="text">
@@ -60,46 +89,38 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
-       <widget class="QLineEdit" name="txt_tracking"/>
-      </item>
-      <item row="10" column="0">
-       <widget class="QLabel" name="lbl_mti_filter_weight">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lbl_min_range">
         <property name="text">
-         <string>MTI Filter Weight</string>
+         <string>Min Range [cm]</string>
         </property>
        </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QLineEdit" name="txt_range_threshold"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="lbl_max_range">
-        <property name="text">
-         <string>Max Range</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="1">
-       <widget class="QLineEdit" name="txt_number_of_track"/>
-      </item>
-      <item row="9" column="1">
-       <widget class="QLineEdit" name="txt_mti_filter_selection"/>
-      </item>
-      <item row="10" column="1">
-       <widget class="QLineEdit" name="txt_mti_filter_weight"/>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="lbl_max_speed">
         <property name="text">
-         <string>Max Speed</string>
+         <string>Max Speed [km/h]</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="lbl_min_speed">
+      <item row="5" column="0">
+       <widget class="QLabel" name="lbl_range_threshold">
         <property name="text">
-         <string>Min Speed</string>
+         <string>Range Threshold</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QLineEdit" name="txt_median_filter_depth">
+        <property name="toolTip">
+         <string>[1, 3, 5, 7, 9, 11, 13]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="1">
+       <widget class="QLineEdit" name="txt_mti_filter_weight">
+        <property name="toolTip">
+         <string>[1, 999]</string>
         </property>
        </widget>
       </item>
@@ -110,23 +131,24 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="txt_speed_threshold"/>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="lbl_range_threshold">
+      <item row="10" column="0">
+       <widget class="QLabel" name="lbl_mti_filter_weight">
         <property name="text">
-         <string>Range Threshold</string>
+         <string>MTI Filter Weight</string>
         </property>
        </widget>
       </item>
-      <item row="8" column="1">
-       <widget class="QLineEdit" name="txt_median_filter_depth"/>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="lbl_min_range">
+      <item row="1" column="0">
+       <widget class="QLabel" name="lbl_max_range">
         <property name="text">
-         <string>Min Range</string>
+         <string>Max Range [cm]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="txt_range_threshold">
+        <property name="toolTip">
+         <string>[0, 1000]</string>
         </property>
        </widget>
       </item>
@@ -137,21 +159,33 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="txt_min_speed"/>
-      </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="txt_min_range"/>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="lbl_tracking">
-        <property name="text">
-         <string>Tracking</string>
+       <widget class="QLineEdit" name="txt_min_range">
+        <property name="toolTip">
+         <string>[0, 4999]</string>
         </property>
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLineEdit" name="txt_max_speed"/>
+       <widget class="QLineEdit" name="txt_max_speed">
+        <property name="toolTip">
+         <string>[1, 65535]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QCheckBox" name="check_tracking">
+        <property name="text">
+         <string>enable Feature</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="lbl_min_speed">
+        <property name="text">
+         <string>Min Speed [km/h]</string>
+        </property>
+       </widget>
       </item>
       <item row="9" column="0">
        <widget class="QLabel" name="lbl_mti_filter_selection">
@@ -160,8 +194,26 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="txt_max_range"/>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="txt_speed_threshold">
+        <property name="toolTip">
+         <string>[0, 1000]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QLineEdit" name="txt_number_of_track">
+        <property name="toolTip">
+         <string>[1, 2, 3, 4, 5]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="1">
+       <widget class="QCheckBox" name="check_mti_filter_selection">
+        <property name="text">
+         <string>enable Feature</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
