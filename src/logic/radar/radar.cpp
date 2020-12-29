@@ -77,6 +77,7 @@ void Radar::disconnect()
     if (m_handle >= 0)
         protocol_disconnect(m_handle);
 
+    m_handle = STATE_RADAR_DISCONNECTED;
     emit connectionChanged(false);
     qInfo() << "Device succesfully disconnected.";
 }
@@ -85,7 +86,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
 {
     auto const nr_of_endpoints = protocol_get_num_endpoints(m_handle);
 
-    for (int i = 1; i <= nr_of_endpoints; ++i)
+    for (auto i = 1; i <= nr_of_endpoints; ++i)
     {
         switch(endpoint)
         {

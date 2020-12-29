@@ -1,5 +1,6 @@
 #include <misc/types.h>
 #include <misc/constants.h>
+#include <misc/messagehandler.h>
 #include <logic/radar/radar.h>
 #include <gui/dashboard/dashboard.h>
 #include <gui/statusbar/statusbar.h>
@@ -14,35 +15,7 @@
 
 #include <QApplication>
 #include <QThread>
-#include <QDebug>
-#include <QTime>
 
-void messageHandler(QtMsgType type, QMessageLogContext const &, QString const & msg)
-{
-    switch (type)
-    {
-        case QtDebugMsg:
-            fprintf(stdout, "%s [DEBUG]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
-            fflush(stdout);
-            break;
-        case QtInfoMsg:
-            fprintf(stdout, "%s [INFO]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
-            fflush(stdout);
-            break;
-        case QtWarningMsg:
-            fprintf(stderr, "%s [WARNING]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
-            fflush(stderr);
-            break;
-        case QtCriticalMsg:
-            fprintf(stderr, "%s [CRITICAL]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
-            fflush(stderr);
-            break;
-        case QtFatalMsg:
-            fprintf(stderr, "%s [FATAL]: %s\n", QTime::currentTime().toString().toStdString().c_str(), msg.toStdString().c_str());
-            fflush(stderr);
-            break;
-    }
-}
 
 bool tryConnect(Radar & r)
 {

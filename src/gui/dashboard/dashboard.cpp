@@ -73,6 +73,7 @@ void Dashboard::setChart(QChart *chart, ChartType_t type)
 void Dashboard::closeEvent(QCloseEvent *event)
 {
     emit closed();
+    m_settings->close();
     event->accept();
 }
 #endif
