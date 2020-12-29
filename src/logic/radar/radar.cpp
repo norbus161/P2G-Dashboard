@@ -91,7 +91,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
         switch(endpoint)
         {
             case EndpointType_t::Calibration:
-                if (getStatusCodeInformation("Add endpoint", ep_calibration_is_compatible_endpoint(m_handle, i)))
+                if (ep_calibration_is_compatible_endpoint(m_handle, i) == 0)
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -99,7 +99,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::AdcXmc:
-                if (getStatusCodeInformation("Add endpoint", ep_radar_adcxmc_is_compatible_endpoint(m_handle, i)))
+                if (ep_radar_adcxmc_is_compatible_endpoint(m_handle, i) == 0)
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -107,7 +107,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::Base:
-                if (getStatusCodeInformation("Add endpoint", ep_radar_base_is_compatible_endpoint(m_handle, i)))
+                if (ep_radar_base_is_compatible_endpoint(m_handle, i) == 0)
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -115,7 +115,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::Doppler:
-                if (getStatusCodeInformation("Add endpoint", ep_radar_doppler_is_compatible_endpoint(m_handle, i)))
+                if (ep_radar_doppler_is_compatible_endpoint(m_handle, i) == 0)
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -123,7 +123,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::Fmcw:
-                if (getStatusCodeInformation("Add endpoint", ep_radar_fmcw_is_compatible_endpoint(m_handle, i)))
+                if (ep_radar_fmcw_is_compatible_endpoint(m_handle, i) == 0)
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -131,7 +131,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::Industrial:
-                if (getStatusCodeInformation("Add endpoint", ep_radar_industrial_is_compatible_endpoint(m_handle, i)))
+                if (ep_radar_industrial_is_compatible_endpoint(m_handle, i) == 0)
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -139,7 +139,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::P2G:
-                if (getStatusCodeInformation("Add endpoint", ep_radar_p2g_is_compatible_endpoint(m_handle, i)))
+                if (ep_radar_p2g_is_compatible_endpoint(m_handle, i) == 0)
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;
@@ -147,7 +147,7 @@ bool Radar::addEndpoint(const EndpointType_t &endpoint)
             break;
 
             case EndpointType_t::TargetDetection:
-                if (getStatusCodeInformation("Add endpoint", ep_targetdetect_is_compatible_endpoint(m_handle, i)))
+                if (ep_targetdetect_is_compatible_endpoint(m_handle, i) == 0)
                 {
                     m_endpoints.insert(endpoint, i);
                     return true;

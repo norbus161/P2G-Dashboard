@@ -67,9 +67,7 @@ Execute the application:
 ### Todos
 
 - [ ] Rangeplot: show maxima labels only for the antenna (1 OR 2) with global maxima
-- [ ] Put Range calculation into signal processcor
+- [ ] Put Range calculation into signal processor class
 - [ ] Radarthread: automatic reconnect 
-- [ ] Settings: add input validator for ranges of settings
-- [ ] Memory leak check
 - [ ] **Refactor code**
 
