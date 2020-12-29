@@ -51,7 +51,9 @@ bool Radar::connect()
         {
             qInfo() << "Device found.";
             printSerialPortInformation(info);
-            printFirmwareInformation();
+            if (!checkFirmwareInformation(RADAR_EXPECTED_FIRMWARE_VERSION))
+                return false;
+
             setCallbackFunctions();
             m_shutdown = false;
             emit connectionChanged(true);
@@ -60,7 +62,6 @@ bool Radar::connect()
     }
 
     qInfo() << "No devices found...";
-
     return false;
 }
 
@@ -256,18 +257,26 @@ void Radar::printSerialPortInformation(const QSerialPortInfo &info)
     emit serialPortChanged(info.portName());
 }
 
-void Radar::printFirmwareInformation()
+bool Radar::checkFirmwareInformation(QString const & version)
 {
     Firmware_Information_t info;
     if (getStatusCodeInformation("Get firmware information" ,protocol_get_firmware_information(m_handle, &info)))
     {
         QString description = info.description;
-        QString version = QString("%1.%2.%3").arg(info.version_major).arg(info.version_minor).arg(info.version_build);
+        QString v = QString("%1.%2.%3").arg(info.version_major).arg(info.version_minor).arg(info.version_build);
+
+        if (v != version)
+        {
+            qWarning() << "Firmware version doesn't match: Expected: " << version << "- Current version: " << v;
+            return false;
+        }
 
         qInfo() << "Description: " << description;
-        qInfo() << "Firmware: " << version;
-        emit firmwareInformationChanged(description, version);
+        qInfo() << "Firmware: " << v;
+        emit firmwareInformationChanged(description, v);
+        return true;
     }
+    return false;
 }
 
 bool Radar::getStatusCodeInformation(QString const & origin, int code)

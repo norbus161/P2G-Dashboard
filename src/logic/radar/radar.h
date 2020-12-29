@@ -48,7 +48,7 @@ signals:
 
 private:
     void printSerialPortInformation(QSerialPortInfo const & info);
-    void printFirmwareInformation();
+    bool checkFirmwareInformation(QString const & version);
     bool getStatusCodeInformation(QString const & origin, int code);
     void setCallbackFunctions();
 
