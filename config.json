@@ -1,0 +1,19 @@
+{
+    "StatusbarEnabled": false,
+    "ToolbarEnabled": false,	
+	
+	"DspSettings":{
+		"RangeMovingAverageFilterLength": 5,
+	    "MinRange": 20,
+		"MaxRange": 1000,
+		"MinSpeed": 0,
+		"MaxSpeed": 4,
+		"SpeedThreshold": 0,
+		"RangeThreshold": 100,
+		"Tracking": false,
+		"NumberOfTracks": 5,
+		"MedianFilterDepth": 5,
+		"MTIFilterSelection": false,
+		"MTIFilterWeight": 100
+	}
+}

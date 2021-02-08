@@ -46,7 +46,7 @@ cd build && cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 ```
 
-### Serial port & execution
+### Serial port permissions (Unix)
 
 Linux: Set up the permissions for accessing the serial port:
 
@@ -55,6 +55,34 @@ cd .. && sudo cp ./driver/udev/90-p2g-linux.rules /etc/udev/rules.d
 sudo udevadm control --reload
 sudo reboot -h now
 ```
+
+### Configuration & execution
+
+```Config.json``` lists some parameters, which can be adjusted. It has to placed in the same director as the executable itself. The ```DspSettings``` will only have an impact to the radar polar plot:
+
+```json
+{
+    "StatusbarEnabled": false,
+    "ToolbarEnabled": false,	
+	
+	"DspSettings":{
+		"RangeMovingAverageFilterLength": 5,
+	    "MinRange": 20,
+		"MaxRange": 1000,
+		"MinSpeed": 0,
+		"MaxSpeed": 4,
+		"SpeedThreshold": 0,
+		"RangeThreshold": 100,
+		"Tracking": false,
+		"NumberOfTracks": 5,
+		"MedianFilterDepth": 5,
+		"MTIFilterSelection": false,
+		"MTIFilterWeight": 100
+	}
+}
+```
+
+
 
 Execute the application:
 
@@ -69,5 +97,6 @@ Execute the application:
 - [ ] Rangeplot: show maxima labels only for the antenna (1 OR 2) with global maxima
 - [ ] Put Range calculation into signal processor class
 - [ ] Radarthread: automatic reconnect 
+- [ ] Save option for dynamic dsp configuration
 - [ ] **Refactor code**
 

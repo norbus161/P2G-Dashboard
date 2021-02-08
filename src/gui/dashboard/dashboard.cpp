@@ -24,6 +24,7 @@ void Dashboard::setStatusbar(StatusBar *statusbar)
 
     m_statusbar = statusbar;
     setStatusBar(m_statusbar);
+    m_statusbar->setVisible(true);
 }
 
 void Dashboard::setToolbar(ToolBar *toolbar)
@@ -33,6 +34,7 @@ void Dashboard::setToolbar(ToolBar *toolbar)
 
     m_toolbar = toolbar;
     addToolBar(Qt::ToolBarArea::LeftToolBarArea, m_toolbar);
+    m_toolbar->setVisible(true);
 }
 
 void Dashboard::setSettings(Settings *settings)
@@ -73,7 +75,10 @@ void Dashboard::setChart(QChart *chart, ChartType_t type)
 void Dashboard::closeEvent(QCloseEvent *event)
 {
     emit closed();
-    m_settings->close();
+    if (m_settings != nullptr)
+    {
+        m_settings->close();
+    }
     event->accept();
 }
 #endif

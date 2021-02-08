@@ -12,4 +12,5 @@ ToolBar::ToolBar(QWidget *parent) : QToolBar("Toolbar", parent)
 
     setFloatable(false);
     setMovable(false);
+    setVisible(false);
 }

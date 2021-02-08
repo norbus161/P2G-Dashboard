@@ -38,3 +38,6 @@ if(UNIX)
     target_include_directories(P2G-Dashboard PRIVATE 3rdparty/sigwatch/include)
     target_link_libraries(P2G-Dashboard PRIVATE sigwatch)
 endif()
+
+# Copy config file to executable
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.json" "${CMAKE_BINARY_DIR}/config.json" COPYONLY)

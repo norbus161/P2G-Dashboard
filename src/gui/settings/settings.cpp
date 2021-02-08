@@ -31,6 +31,7 @@ void Settings::applyButtonHandler()
     emit frameFormatChanged(copy_frame_format);
 
     auto copy_dsp_settings = m_dsp_settings;
+    copy_dsp_settings.range_mvg_avg_length = ui->txt_range_moving_average->text().toInt();
     copy_dsp_settings.min_range_cm = ui->txt_min_range->text().toInt();
     copy_dsp_settings.max_range_cm = ui->txt_max_range->text().toInt();
     copy_dsp_settings.min_speed_kmh = ui->txt_min_speed->text().toInt();
@@ -56,6 +57,7 @@ void Settings::responseFrameFormat(const Frame_Format_t &frame_format)
 void Settings::responseDspSettings(const DSP_Settings_t &dsp_settings)
 {
     m_dsp_settings = dsp_settings;
+    ui->txt_range_moving_average->setText(QString::number(dsp_settings.range_mvg_avg_length));
     ui->txt_min_range->setText(QString::number(dsp_settings.min_range_cm));
     ui->txt_max_range->setText(QString::number(dsp_settings.max_range_cm));
     ui->txt_min_speed->setText(QString::number(dsp_settings.min_speed_kmh));

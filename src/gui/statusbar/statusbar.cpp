@@ -8,6 +8,7 @@ StatusBar::StatusBar(QWidget *parent) : QStatusBar(parent)
     m_temperature = "";
     m_connection_state = false;
     setSizeGripEnabled(false);
+    setVisible(false);
 }
 
 void StatusBar::updateFirmwareInformation(QString const & description, QString const & version)

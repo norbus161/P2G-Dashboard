@@ -2,6 +2,7 @@
 #include <misc/constants.h>
 #include <misc/messagehandler.h>
 #include <logic/radar/radar.h>
+#include <logic/settings/settingsloader.h>
 #include <gui/dashboard/dashboard.h>
 #include <gui/statusbar/statusbar.h>
 #include <gui/toolbar/toolbar.h>
@@ -31,7 +32,7 @@ bool tryConnect(Radar & r)
 
     if (attempts == STARTUP_CONNECTION_ATTEMPS)
     {
-        qWarning() << "Aborted: Failed to connect to radar sensor. ";
+        qCritical() << "Aborted: Failed to connect to radar sensor. ";
         return false;
     }
     return true;
@@ -71,6 +72,21 @@ bool trySettingUpFrameTrigger(Radar & r)
     return true;
 }
 
+bool tryParsingSettings(Settings_t & s)
+{
+    SettingsLoader loader;
+    qInfo() << "Trying to parse configuration file...";
+
+    if (!loader.parseSettings(CONFIGURATION_FILE_PATH, s))
+    {
+        qCritical() << "Error: Failed to parse configuration file.";
+        return false;
+    }
+    qInfo() << "Successfully parsed configuration file.";
+
+    return true;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -89,44 +105,59 @@ int main(int argc, char *argv[])
 #endif
 
     // Instantiate all variables
+    Settings_t settings;
     Radar radar;
     Dashboard dashboard;
-    StatusBar statusbar(&dashboard);
+    StatusBar statusbar;
     ToolBar toolbar(&dashboard);
-    Settings settings(&dashboard);
+    Settings settings_dialog(&dashboard);
     TimeDataChart timedata;
     RangeDataChart rangedata;
     TargetDataChart targetdata;
 
+    // Load Settings
+    if (!tryParsingSettings(settings))
+    {
+        return ERROR_STARTUP_PARSING_CONFIGURATION_FAILED;
+    }
+
     // Setup the Mainwindow
-    dashboard.setStatusbar(&statusbar);
-    dashboard.setToolbar(&toolbar);
-    dashboard.setSettings(&settings);
+    if (settings.statusbar_enabled)
+    {
+        dashboard.setStatusbar(&statusbar);
+
+        // Connections: Radar --> Statusbar
+        QObject::connect(&radar, &Radar::connectionChanged, &statusbar, &StatusBar::updateConnection);
+        QObject::connect(&radar, &Radar::firmwareInformationChanged, &statusbar, &StatusBar::updateFirmwareInformation);
+        QObject::connect(&radar, &Radar::temperatureChanged, &statusbar, &StatusBar::updateTemperature);
+        QObject::connect(&radar, &Radar::serialPortChanged, &statusbar, &StatusBar::updateSerialPort);
+    }
+
+    if (settings.toolbar_enabled)
+    {
+        dashboard.setToolbar(&toolbar);
+        dashboard.setSettings(&settings_dialog);
+
+        // Connections: Toolbar --> Settings
+        QObject::connect(&toolbar, &ToolBar::settingsClicked, &settings_dialog, &Settings::requestAll);
+        QObject::connect(&toolbar, &ToolBar::settingsClicked, &settings_dialog, &Settings::show);
+
+        // Connections: Settings --> Radar
+        qRegisterMetaType<Frame_Format_t>("Frame_Format_t");
+        QObject::connect(&settings_dialog, &Settings::requestFrameFormat, &radar, &Radar::getFrameFormat, Qt::DirectConnection);
+        QObject::connect(&settings_dialog, &Settings::frameFormatChanged, &radar, &Radar::setFrameFormat, Qt::DirectConnection);
+        qRegisterMetaType<DSP_Settings_t>("DSP_Settings_t");
+        QObject::connect(&settings_dialog, &Settings::requestDspSettings, &radar, &Radar::getDspSettings, Qt::DirectConnection);
+        QObject::connect(&settings_dialog, &Settings::dspSettingsChanged, &radar, &Radar::setDspSettings, Qt::DirectConnection);
+
+        // Connections: Radar --> Settings
+        QObject::connect(&radar, &Radar::frameFormatChanged, &settings_dialog, &Settings::responseFrameFormat);
+        QObject::connect(&radar, &Radar::dspSettingsChanged, &settings_dialog, &Settings::responseDspSettings);
+    }
+
     dashboard.setChart(&timedata, ChartType_t::TimeData);
     dashboard.setChart(&rangedata, ChartType_t::RangeData);
     dashboard.setChart(&targetdata, ChartType_t::TargetData);
-
-    // Connections: Toolbar --> Settings
-    QObject::connect(&toolbar, &ToolBar::settingsClicked, &settings, &Settings::requestAll);
-    QObject::connect(&toolbar, &ToolBar::settingsClicked, &settings, &Settings::show);
-
-    // Connections: Settings --> Radar
-    qRegisterMetaType<Frame_Format_t>("Frame_Format_t");
-    QObject::connect(&settings, &Settings::requestFrameFormat, &radar, &Radar::getFrameFormat, Qt::DirectConnection);
-    QObject::connect(&settings, &Settings::frameFormatChanged, &radar, &Radar::setFrameFormat, Qt::DirectConnection);
-    qRegisterMetaType<DSP_Settings_t>("DSP_Settings_t");
-    QObject::connect(&settings, &Settings::requestDspSettings, &radar, &Radar::getDspSettings, Qt::DirectConnection);
-    QObject::connect(&settings, &Settings::dspSettingsChanged, &radar, &Radar::setDspSettings, Qt::DirectConnection);
-
-    // Connections: Radar --> Settings
-    QObject::connect(&radar, &Radar::frameFormatChanged, &settings, &Settings::responseFrameFormat);
-    QObject::connect(&radar, &Radar::dspSettingsChanged, &settings, &Settings::responseDspSettings);
-
-    // Connections: Radar --> Statusbar
-    QObject::connect(&radar, &Radar::connectionChanged, &statusbar, &StatusBar::updateConnection);
-    QObject::connect(&radar, &Radar::firmwareInformationChanged, &statusbar, &StatusBar::updateFirmwareInformation);
-    QObject::connect(&radar, &Radar::temperatureChanged, &statusbar, &StatusBar::updateTemperature);
-    QObject::connect(&radar, &Radar::serialPortChanged, &statusbar, &StatusBar::updateSerialPort);
 
     // Connections: Radar --> Charts
     qRegisterMetaType<Targets_t>("Targets_t");
@@ -137,11 +168,20 @@ int main(int argc, char *argv[])
 
     // Try to setup the radar sensor
     if (!tryConnect(radar))
+    {
         return ERROR_STARTUP_CONNECTION_FAILED;
+    }
     if (!tryAddingEndpoints(radar))
+    {
         return ERROR_STARTUP_ADDING_ENDPOINTS_FAILED;
+    }
     if (!trySettingUpFrameTrigger(radar))
+    {
         return ERROR_STARTUP_FRAMETRIGGER_SETUP_FAILED;
+    }
+
+    // Set the parsed dsp settings
+    radar.setDspSettings(settings.dsp_settings);
 
     // Move the radar object into another thread, so the main thread with the gui won't block
     QThread* thread = new QThread();
