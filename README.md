@@ -67,7 +67,7 @@ sudo reboot -h now
 	
 	"DspSettings":{
 		"RangeMovingAverageFilterLength": 5,
-	    "MinRange": 20,
+	        "MinRange": 20,
 		"MaxRange": 1000,
 		"MinSpeed": 0,
 		"MaxSpeed": 4,
