@@ -55,7 +55,7 @@ private:
 private:
     int m_handle;
     bool m_shutdown;
-    QRecursiveMutex m;
+    QMutex m;
     QMap<EndpointType_t, int> m_endpoints;
     SignalProcessor m_signal_processor;
     p1d::Persistence1D m_persistence;
