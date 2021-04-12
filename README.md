@@ -25,6 +25,14 @@ This includes:
   * `Qt5SerialPort`
   * `Qt5Charts`
 
+### Installation of libraries on Raspberry Pi 
+
+```bash
+sudo apt-get update
+sudo apt-get dist-upgrade
+sudo apt-get install qt5-default libqt5serialport5 libqt5serialport5 libqt5serialport5-dev libqt5charts libqt5charts-dev
+```
+
 ### Build instructions 
 
 Clone the repository:
