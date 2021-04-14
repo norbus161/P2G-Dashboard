@@ -30,7 +30,7 @@ This includes:
 ```bash
 sudo apt-get update
 sudo apt-get dist-upgrade
-sudo apt-get install qt5-default libqt5serialport5 libqt5serialport5 libqt5serialport5-dev libqt5charts libqt5charts-dev
+sudo apt-get install cmake qt5-default libqt5serialport5 libqt5serialport5 libqt5serialport5-dev libqt5charts5 libqt5charts5-dev
 ```
 
 ### Build instructions 
